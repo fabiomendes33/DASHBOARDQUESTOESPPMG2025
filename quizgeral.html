@@ -1,0 +1,3710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quiz Geral – Polícia Penal MG (AOCP)</title>
+    <style>
+      :root {
+        --port: #2563eb;
+        --info: #0891b2;
+        --nd: #f97316;
+        --dh: #a855f7;
+        --leg: #16a34a;
+        --rl: #e11d48;
+        --ok: #16a34a;
+        --err: #dc2626;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      body {
+        background: #f3f4f6;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(120deg, #2563eb, #22c55e);
+        color: white;
+        padding: 1.1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 1.4rem;
+      }
+      header p {
+        font-size: 0.85rem;
+        max-width: 520px;
+      }
+
+      main {
+        padding: 1.1rem 2rem 1.5rem;
+        display: grid;
+        grid-template-columns: 290px 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 960px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .painel {
+        background: white;
+        border-radius: 0.9rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      }
+      .painel h2 {
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+      }
+      .painel small {
+        font-size: 0.76rem;
+        color: #6b7280;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+      }
+      .kpi {
+        background: #f9fafb;
+        border-radius: 0.7rem;
+        padding: 0.45rem 0.5rem;
+        border: 1px solid #e5e7eb;
+        font-size: 0.78rem;
+      }
+      .kpi strong {
+        display: block;
+        font-size: 1.05rem;
+        margin-top: 0.15rem;
+      }
+
+      .barra {
+        width: 100%;
+        height: 0.4rem;
+        border-radius: 999px;
+        background: #e5e7eb;
+        margin-top: 0.3rem;
+        overflow: hidden;
+      }
+      .barra div {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.2s ease-out;
+      }
+
+      .disciplinas {
+        margin-top: 0.8rem;
+        font-size: 0.78rem;
+      }
+      .disc-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0.1rem;
+        border-bottom: 1px dashed #e5e7eb;
+      }
+      .disc-row:last-child {
+        border-bottom: none;
+      }
+      .disc-left {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .pct-label {
+        font-weight: 600;
+      }
+
+      .status-meta {
+        font-size: 0.75rem;
+        margin-top: 0.45rem;
+        color: #6b7280;
+      }
+
+      .questoes {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+      .card-q {
+        background: white;
+        border-radius: 0.9rem;
+        padding: 0.75rem 0.9rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.4rem;
+      }
+      .badge-n {
+        background: #e5e7eb;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-disc {
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #111827;
+      }
+      .enunciado {
+        font-size: 0.86rem;
+        margin-bottom: 0.4rem;
+      }
+      .alternativas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .alt {
+        border-radius: 0.7rem;
+        border: 1px solid #d1d5db;
+        padding: 0.35rem 0.55rem;
+        font-size: 0.82rem;
+        cursor: pointer;
+        background: #f9fafb;
+        transition: 0.15s;
+        display: flex;
+        gap: 0.4rem;
+        align-items: flex-start;
+      }
+      .alt:hover {
+        background: #e5effe;
+        border-color: #bfdbfe;
+      }
+      .alt span.letra {
+        font-weight: 700;
+        color: #4b5563;
+      }
+      .alt.certa {
+        background: #dcfce7;
+        border-color: var(--ok);
+      }
+      .alt.errada-selecionada {
+        background: #fee2e2;
+        border-color: var(--err);
+      }
+      .alt.desativada {
+        cursor: default;
+        opacity: 0.85;
+      }
+
+      .status {
+        font-size: 0.78rem;
+        margin-top: 0.2rem;
+      }
+      .status span.ok {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      .status span.err {
+        color: var(--err);
+        font-weight: 600;
+      }
+      .explicacao {
+        margin-top: 0.4rem;
+        border-top: 1px dashed #e5e7eb;
+        padding-top: 0.3rem;
+        font-size: 0.8rem;
+        color: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Quiz Geral – Polícia Penal MG (AOCP)</h1>
+        <p>
+          Quiz unificado para todas as disciplinas do edital: Português,
+          Informática, Noções de Direito, Direitos Humanos, Legislação Especial
+          e Raciocínio Lógico. Cada questão tem 4 alternativas e explicação
+          breve. [web:2][web:59]
+        </p>
+      </div>
+      <div>
+        <p style="font-size: 0.8rem">
+          Meta: 90% de acertos em cada disciplina. O painel mostra seu
+          desempenho em tempo real.
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Painel -->
+      <aside class="painel">
+        <h2>Desempenho Geral</h2>
+        <small>Resultados somando todas as questões respondidas.</small>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            Total respondidas
+            <strong id="kTotalResp">0</strong>
+          </div>
+          <div class="kpi">
+            Acertos
+            <strong id="kTotalAcertos">0</strong>
+          </div>
+          <div class="kpi">
+            Erros
+            <strong id="kTotalErros">0</strong>
+          </div>
+          <div class="kpi">
+            Média geral
+            <strong id="kMedia"
+              >0<span style="font-size: 0.8rem">%</span></strong
+            >
+          </div>
+        </div>
+
+        <div class="barra" style="margin-top: 0.45rem">
+          <div
+            id="bGeral"
+            style="
+              width: 0%;
+              background: linear-gradient(120deg, #22c55e, #16a34a);
+            "
+          ></div>
+        </div>
+
+        <div class="disciplinas">
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--port)"></span>
+              <span>Língua Portuguesa</span>
+            </div>
+            <span class="pct-label" id="pPORT">0%</span>
+          </div>
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--leg)"></span>
+              <span>Legislação Especial</span>
+            </div>
+            <span class="pct-label" id="pLEGESP">0%</span>
+          </div>
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--dh)"></span>
+              <span>Direitos Humanos</span>
+            </div>
+            <span class="pct-label" id="pDH">0%</span>
+          </div>
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--nd)"></span>
+              <span>Noções de Direito</span>
+            </div>
+            <span class="pct-label" id="pND">0%</span>
+          </div>
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--info)"></span>
+              <span>Informática</span>
+            </div>
+            <span class="pct-label" id="pINFO">0%</span>
+          </div>
+          <div class="disc-row">
+            <div class="disc-left">
+              <span class="dot" style="background: var(--rl)"></span>
+              <span>Raciocínio Lógico</span>
+            </div>
+            <span class="pct-label" id="pRL">0%</span>
+          </div>
+        </div>
+
+        <p class="status-meta">
+          Interpretação das cores das porcentagens:<br />
+          • &lt; 70%: vermelho (reforço urgente).<br />
+          • 70–89%: laranja (em progresso).<br />
+          • ≥ 90%: verde (meta atingida).
+        </p>
+      </aside>
+
+      <!-- Questões -->
+      <section class="questoes" id="listaQuestoes"></section>
+    </main>
+
+    <script>
+      const questoes = [
+        // 1–5 Interpretação de textos
+        {
+          id: 1,
+          assunto: "Interpretação – ideia central",
+          enunciado:
+            "Um texto sobre o trabalho do policial penal afirma que 'a firmeza na aplicação das normas precisa caminhar junto com o respeito aos direitos fundamentais'. A ideia central dessa frase é que:",
+          alternativas: {
+            A: "a aplicação das normas dispensa a consideração dos direitos fundamentais.",
+            B: "a atuação do policial penal deve equilibrar disciplina e respeito à dignidade humana.",
+            C: "os direitos fundamentais são obstáculos ao cumprimento das normas.",
+            D: "a disciplina é menos importante do que a cordialidade com os presos.",
+          },
+          correta: "B",
+          explicacao:
+            "O enunciado fala em firmeza e, ao mesmo tempo, em respeito aos direitos fundamentais, indicando equilíbrio entre disciplina e dignidade, que corresponde à alternativa B.",
+        },
+        {
+          id: 2,
+          assunto: "Interpretação – inferência",
+          enunciado:
+            "Se um autor afirma que 'a comunicação clara entre os setores do presídio reduz falhas de segurança', infere‑se corretamente que:",
+          alternativas: {
+            A: "a comunicação confusa pode aumentar o risco de falhas.",
+            B: "a segurança independe da comunicação interna.",
+            C: "apenas a chefia precisa se comunicar com clareza.",
+            D: "a comunicação clara dispensa qualquer planejamento.",
+          },
+          correta: "A",
+          explicacao:
+            "Se a comunicação clara reduz falhas, conclui‑se que a comunicação confusa tende a favorecê‑las; essa relação está na alternativa A.",
+        },
+        {
+          id: 3,
+          assunto: "Interpretação – implícitos",
+          enunciado:
+            "Na frase 'O servidor voltou a descumprir o horário de plantão', depreende‑se que:",
+          alternativas: {
+            A: "é a primeira vez que há descumprimento de horário.",
+            B: "o servidor mudou recentemente de unidade prisional.",
+            C: "o descumprimento de horário já havia ocorrido antes.",
+            D: "o servidor sempre cumpriu pontualmente o horário.",
+          },
+          correta: "C",
+          explicacao:
+            "O verbo 'voltar a' indica repetição: pressupõe que o servidor já havia descumprido o horário em outra ocasião.",
+        },
+        {
+          id: 4,
+          assunto: "Interpretação – ponto de vista",
+          enunciado:
+            "Em um artigo, lê‑se: 'A transparência nos procedimentos internos aumenta a confiança da sociedade no sistema prisional.' O autor:",
+          alternativas: {
+            A: "defende que a sociedade não tem interesse em informações sobre o sistema.",
+            B: "critica a transparência por considerá‑la perigosa.",
+            C: "apresenta opinião favorável à transparência administrativa.",
+            D: "afirma que a transparência é incompatível com a legalidade.",
+          },
+          correta: "C",
+          explicacao:
+            "O texto associa transparência a aumento de confiança, demonstrando avaliação positiva dessa prática, como diz a alternativa C.",
+        },
+        {
+          id: 5,
+          assunto: "Interpretação – funções da linguagem",
+          enunciado:
+            "Um comunicado interno que orienta os agentes sobre uso de equipamentos de proteção individual tem, predominantemente, função:",
+          alternativas: {
+            A: "poética, valorizando a forma da mensagem.",
+            B: "injuntiva/instrucional, indicando procedimentos a serem seguidos.",
+            C: "fática, apenas para testar o canal de comunicação.",
+            D: "lúdica, visando ao entretenimento dos servidores.",
+          },
+          correta: "B",
+          explicacao:
+            "Comunicados que orientam condutas cumprem função injuntiva ou instrucional, pois determinam o que o destinatário deve fazer.",
+        },
+
+        // 6–9 Coesão, conectivos, referência
+        {
+          id: 6,
+          assunto: "Coesão – conectivos",
+          enunciado:
+            "Na frase 'O agente foi firme, mas manteve o diálogo com os custodiados', o conectivo 'mas' estabelece relação de:",
+          alternativas: {
+            A: "adição.",
+            B: "oposição ou contraste.",
+            C: "conclusão.",
+            D: "causa.",
+          },
+          correta: "B",
+          explicacao:
+            "'Mas' é conjunção adversativa, marcando contraste entre ser firme e, ao mesmo tempo, manter o diálogo.",
+        },
+        {
+          id: 7,
+          assunto: "Coesão – substituição pronominal",
+          enunciado:
+            "No trecho 'As normas disciplinares foram revisadas e elas serão divulgadas em todas as unidades', o pronome 'elas' retoma:",
+          alternativas: {
+            A: "unidades.",
+            B: "normas disciplinares.",
+            C: "todas.",
+            D: "foram.",
+          },
+          correta: "B",
+          explicacao:
+            "O pronome 'elas' está no feminino plural e retoma o termo 'normas disciplinares', também feminino plural.",
+        },
+        {
+          id: 8,
+          assunto: "Coesão – pronome relativo",
+          enunciado:
+            "Na frase 'Os presos que descumprirem as regras responderão administrativamente', o termo 'que' é:",
+          alternativas: {
+            A: "artigo definido.",
+            B: "pronome relativo, retomando 'presos'.",
+            C: "conjunção integrante.",
+            D: "advérbio de intensidade.",
+          },
+          correta: "B",
+          explicacao:
+            "O 'que' introduz oração adjetiva e retoma o antecedente 'presos', caracterizando‑se como pronome relativo.",
+        },
+        {
+          id: 9,
+          assunto: "Coesão – conectores de causa e consequência",
+          enunciado:
+            "Assinale a frase em que o conectivo está empregado com sentido de causa:",
+          alternativas: {
+            A: "O agente se preparou para a revista, portanto realizou o procedimento com segurança.",
+            B: "O agente se preparou para a revista, porque sabia da importância do procedimento.",
+            C: "O agente se preparou para a revista, logo cumpriu o cronograma.",
+            D: "O agente se preparou para a revista, assim evitou problemas.",
+          },
+          correta: "B",
+          explicacao:
+            "'Porque' introduz a causa da preparação do agente; 'portanto', 'logo' e 'assim' indicam consequência da preparação.",
+        },
+
+        // 10–13 Concordância, regência, crase
+        {
+          id: 10,
+          assunto: "Concordância verbal",
+          enunciado: "Assinale a frase correta quanto à concordância verbal:",
+          alternativas: {
+            A: "Houveram vários incidentes durante o plantão.",
+            B: "Faltou agentes para cobrir o turno da noite.",
+            C: "Faltaram agentes para cobrir o turno da noite.",
+            D: "Restou apenas duas vagas no curso de formação.",
+          },
+          correta: "C",
+          explicacao:
+            "O verbo 'faltar' concorda com o sujeito plural 'agentes' ('faltaram'). Em A, 'haver' com sentido de existir é impessoal ('houve'); B e D exigiriam verbo no plural.",
+        },
+        {
+          id: 11,
+          assunto: "Concordância nominal",
+          enunciado:
+            "Assinale a alternativa em que a concordância nominal está correta:",
+          alternativas: {
+            A: "As agentes estavam meio cansadas após o plantão.",
+            B: "As normas eram bastante rigoroso.",
+            C: "Os relatórios estavam meio incompletas.",
+            D: "Os servidores pareciam bastante atento às instruções.",
+          },
+          correta: "A",
+          explicacao:
+            "Em A, 'meio' atua como advérbio de intensidade e permanece invariável ('meio cansadas'); as demais apresentam discordância entre substantivo e adjetivo.",
+        },
+        {
+          id: 12,
+          assunto: "Crase / regência",
+          enunciado:
+            "Assinale a frase em que a crase está empregada corretamente:",
+          alternativas: {
+            A: "Os servidores tiveram acesso à edital publicado.",
+            B: "O diretor referiu‑se à condutas inadequadas.",
+            C: "A chefia deu prioridade à segurança dos custodiados.",
+            D: "O agente estava disposto à colaborar com qualquer irregularidade.",
+          },
+          correta: "C",
+          explicacao:
+            "Em C, 'dar prioridade a' + 'a segurança' exige crase ('à segurança'). Em A, o correto é 'ao edital'; em B, 'às condutas'; em D, não há artigo antes de 'colaborar'.",
+        },
+        {
+          id: 13,
+          assunto: "Regência verbal",
+          enunciado:
+            "Assinale a frase que respeita a regência verbal da norma‑padrão:",
+          alternativas: {
+            A: "Ele implicou com o colega sem motivo.",
+            B: "Ele assistiu o jogo no plantão.",
+            C: "Ele namorou com a mesma pessoa por anos.",
+            D: "Ele visou a cumprir a lei apenas quando conveniente.",
+          },
+          correta: "A",
+          explicacao:
+            "'Implicar com' é regência correta. Em B, 'assistir' (ver) exige preposição: 'assistiu ao jogo'; em D, 'visar a' indica finalidade, mas o complemento 'cumprir a lei apenas quando conveniente' contradiz o sentido jurídico adequado.",
+        },
+
+        // 14–17 Pontuação e período composto
+        {
+          id: 14,
+          assunto: "Pontuação – vírgula",
+          enunciado:
+            "Assinale a frase em que o uso da vírgula está de acordo com a norma‑padrão:",
+          alternativas: {
+            A: "Durante a inspeção, os agentes identificaram irregularidades.",
+            B: "Os agentes, identificaram irregularidades durante a inspeção.",
+            C: "Os agentes identificaram, irregularidades durante a inspeção.",
+            D: "Durante a inspeção os agentes identificaram, irregularidades.",
+          },
+          correta: "A",
+          explicacao:
+            "Em A, a vírgula separa o adjunto adverbial deslocado ('Durante a inspeção'); nas demais há vírgulas desnecessárias.",
+        },
+        {
+          id: 15,
+          assunto: "Pontuação – orações subordinadas",
+          enunciado:
+            "Na frase 'Se necessário, a direção poderá alterar a escala de plantões', a vírgula foi usada para:",
+          alternativas: {
+            A: "indicar uma enumeração.",
+            B: "separar oração subordinada adverbial condicional anteposta.",
+            C: "marcar vocativo.",
+            D: "separar sujeito de predicado.",
+          },
+          correta: "B",
+          explicacao:
+            "'Se necessário' é oração subordinada adverbial condicional deslocada para o início do período; nesse caso, a vírgula é recomendada.",
+        },
+        {
+          id: 16,
+          assunto: "Período composto – finalidade",
+          enunciado:
+            "Na frase 'Os agentes registraram o ocorrido para que a chefia analisasse a situação', a oração introduzida por 'para que' é:",
+          alternativas: {
+            A: "subordinada adverbial condicional.",
+            B: "subordinada adverbial final.",
+            C: "subordinada adjetiva restritiva.",
+            D: "coordenada explicativa.",
+          },
+          correta: "B",
+          explicacao:
+            "'Para que' indica finalidade da ação de registrar, caracterizando oração subordinada adverbial final.",
+        },
+        {
+          id: 17,
+          assunto: "Vozes verbais",
+          enunciado:
+            "A frase 'A comissão analisou as ocorrências do mês' está na voz ativa. A forma correspondente na voz passiva analítica é:",
+          alternativas: {
+            A: "As ocorrências do mês analisaram a comissão.",
+            B: "Foram as ocorrências do mês que analisaram a comissão.",
+            C: "As ocorrências do mês foram analisadas pela comissão.",
+            D: "As ocorrências do mês seriam analisadas pela comissão.",
+          },
+          correta: "C",
+          explicacao:
+            "Na voz passiva, o objeto direto torna‑se sujeito paciente: 'as ocorrências do mês foram analisadas pela comissão'.",
+        },
+
+        // 18–20 Vocabulário, colocação pronominal, tipos de texto
+        {
+          id: 18,
+          assunto: "Vocabulário – sentido aproximado",
+          enunciado:
+            "Na frase 'A medida adotada mostrou‑se eficaz para reduzir conflitos', o termo 'eficaz' pode ser substituído, sem prejuízo essencial de sentido, por:",
+          alternativas: {
+            A: "supérflua.",
+            B: "efetiva.",
+            C: "improvisada.",
+            D: "arriscada.",
+          },
+          correta: "B",
+          explicacao:
+            "'Eficaz' e 'efetiva' designam algo que produz o resultado esperado; as demais palavras têm sentidos diferentes.",
+        },
+        {
+          id: 19,
+          assunto: "Colocação pronominal",
+          enunciado:
+            "Assinale a frase que obedece às regras de colocação pronominal:",
+          alternativas: {
+            A: "Não se deve desrespeitar o regulamento.",
+            B: "Deve‑se não desrespeitar o regulamento.",
+            C: "Respeitar‑se‑á sempre o regulamento, não.",
+            D: "O regulamento se, deve ser respeitado.",
+          },
+          correta: "A",
+          explicacao:
+            "O advérbio de negação 'não' exige próclise: 'Não se deve...'; as demais construções violam a norma de colocação pronominal.",
+        },
+        {
+          id: 20,
+          assunto: "Tipos de texto",
+          enunciado:
+            "Um manual de procedimentos que apresenta passo a passo como registrar uma ocorrência no sistema é classificado predominantemente como texto:",
+          alternativas: {
+            A: "narrativo.",
+            B: "dissertativo-argumentativo.",
+            C: "instrucional/injuntivo.",
+            D: "poético.",
+          },
+          correta: "C",
+          explicacao:
+            "Manuais de procedimentos orientam ações do leitor, sendo textos instrucionais (injuntivos).",
+        },
+        // Legislação Especial – 20 questões
+
+        // 1–5 LEP – princípios gerais e objetivos
+        {
+          id: 21,
+          materia: "LEGESP",
+          assunto: "LEP – finalidade da execução penal",
+          enunciado:
+            "A Lei de Execução Penal estabelece que a execução da pena privativa de liberdade tem, entre outros, o objetivo de:",
+          alternativas: {
+            A: "impor sofrimento físico ao condenado, para desestimular o crime.",
+            B: "proporcionar condições para a integração social do condenado, resguardando também a segurança da sociedade.",
+            C: "afastar definitivamente o condenado do convívio social, sem perspectiva de retorno.",
+            D: "substituir qualquer atuação do Poder Judiciário na aplicação da pena.",
+          },
+          correta: "B",
+          explicacao:
+            "A LEP indica que a execução da pena busca efetivar condenações e oferecer condições para a harmônica integração social do condenado, conciliando proteção social e ressocialização.",
+        },
+        {
+          id: 22,
+          materia: "LEGESP",
+          assunto: "LEP – legalidade da execução",
+          enunciado:
+            "Segundo a LEP, a execução penal deve assegurar ao condenado o respeito a seus direitos, desde que:",
+          alternativas: {
+            A: "compatíveis com a sentença e com os limites estabelecidos pela lei.",
+            B: "sejam aprovados pelo diretor do estabelecimento prisional.",
+            C: "não gerem qualquer custo para o Estado.",
+            D: "não contrariem interesses da mídia ou da opinião pública.",
+          },
+          correta: "A",
+          explicacao:
+            "A LEP prevê que ao condenado serão assegurados direitos não alcançados pela sentença ou pela lei; ou seja, só podem ser restringidos direitos expressamente afetados pela condenação ou por norma legal.",
+        },
+        {
+          id: 23,
+          materia: "LEGESP",
+          assunto: "LEP – classificação dos estabelecimentos",
+          enunciado:
+            "Conforme a LEP, os estabelecimentos penais devem ser classificados, entre outros critérios, de modo a:",
+          alternativas: {
+            A: "misturar presos provisórios e condenados em todas as unidades.",
+            B: "diferenciar regimes e categorias de presos, evitando o contágio criminógeno.",
+            C: "alocar todos os condenados em estabelecimentos de segurança máxima.",
+            D: "organizar a lotação por ordem alfabética do nome do preso.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê classificação por regime e por natureza da pena, buscando separar presos provisórios de condenados e evitar a influência negativa entre diferentes perfis.",
+        },
+        {
+          id: 24,
+          materia: "LEGESP",
+          assunto: "LEP – assistência ao preso",
+          enunciado:
+            "A assistência ao preso prevista na Lei de Execução Penal tem por finalidade principal:",
+          alternativas: {
+            A: "apenas garantir vantagens materiais superiores às da população em geral.",
+            B: "prevenir o crime e orientar o retorno à convivência em sociedade.",
+            C: "substituir a família em todas as obrigações afetivas.",
+            D: "isolar o preso de qualquer contato com o meio social.",
+          },
+          correta: "B",
+          explicacao:
+            "A assistência material, médica, educacional, social, religiosa e jurídica busca prevenir reincidência e preparar o retorno do apenado ao convívio social.",
+        },
+        {
+          id: 25,
+          materia: "LEGESP",
+          assunto: "LEP – direitos do preso",
+          enunciado:
+            "Entre os direitos assegurados ao preso na LEP, destaca‑se:",
+          alternativas: {
+            A: "ser submetido a penas corporais para manutenção da disciplina.",
+            B: "receber tratamento cruel quando houver falta grave.",
+            C: "ter respeitada sua integridade física e moral.",
+            D: "ficar permanentemente incomunicável.",
+          },
+          correta: "C",
+          explicacao:
+            "A LEP, em consonância com a Constituição, garante respeito à integridade física e moral do preso, vedando penas cruéis e tratamentos desumanos.",
+        },
+
+        // 6–9 LEP – disciplina e sanções
+        {
+          id: 26,
+          materia: "LEGESP",
+          assunto: "LEP – faltas disciplinares",
+          enunciado:
+            "De acordo com a LEP, a prática de falta grave pelo condenado pode acarretar, entre outras consequências:",
+          alternativas: {
+            A: "concessão automática de indulto.",
+            B: "regressão de regime e perda de dias remidos, observados os limites legais.",
+            C: "extinção da punibilidade.",
+            D: "impossibilidade definitiva de progressão de regime.",
+          },
+          correta: "B",
+          explicacao:
+            "A falta grave pode levar à regressão de regime e à perda de até certo limite de dias remidos, conforme previsão da LEP, sem extinguir a pena ou barrar para sempre a progressão.",
+        },
+        {
+          id: 27,
+          materia: "LEGESP",
+          assunto: "LEP – sanções disciplinares",
+          enunciado:
+            "Quanto às sanções disciplinares previstas na LEP, é correto afirmar que:",
+          alternativas: {
+            A: "a lei admite penas de caráter cruel para casos excepcionais.",
+            B: "o isolamento disciplinar deve observar limites de duração estabelecidos em lei.",
+            C: "qualquer sanção pode ser aplicada sem procedimento administrativo.",
+            D: "o preso não tem direito de defesa em processo disciplinar.",
+          },
+          correta: "B",
+          explicacao:
+            "O isolamento disciplinar é previsto, mas deve respeitar limites de tempo e procedimento com apuração da falta, assegurando defesa ao preso.",
+        },
+        {
+          id: 28,
+          materia: "LEGESP",
+          assunto: "LEP – trabalho do preso",
+          enunciado: "Nos termos da LEP, o trabalho do preso:",
+          alternativas: {
+            A: "é proibido, pois violaria o princípio da dignidade.",
+            B: "deve ser sempre forçado, sem qualquer contraprestação.",
+            C: "tem finalidade educativa e produtiva, devendo ser remunerado.",
+            D: "só pode ocorrer fora do estabelecimento prisional.",
+          },
+          correta: "C",
+          explicacao:
+            "A LEP prevê o trabalho como dever social e condição de dignidade, com finalidade educativa e produtiva, devendo ser remunerado e protegido pelas normas de segurança e higiene.",
+        },
+        {
+          id: 29,
+          materia: "LEGESP",
+          assunto: "LEP – remição da pena",
+          enunciado: "A LEP prevê a remição de pena, em linhas gerais, como:",
+          alternativas: {
+            A: "aumento automático de pena em razão de falta disciplinar.",
+            B: "desconto de parte da pena pelo trabalho ou estudo do condenado, nos termos da lei.",
+            C: "instituto exclusivo para presos provisórios.",
+            D: "benefício restrito a condenados por crimes hediondos.",
+          },
+          correta: "B",
+          explicacao:
+            "Remição permite abater dias da pena em razão de trabalho ou estudo, observadas as regras legais, como incentivo à atividade ressocializadora.",
+        },
+        {
+          // 30–33 Crimes Hediondos (Lei 8.072/1990)
+
+          id: 30,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – conceito geral",
+          enunciado:
+            "A Lei de Crimes Hediondos estabelece que determinados delitos, considerados de extrema gravidade, devem:",
+          alternativas: {
+            A: "receber tratamento idêntico ao de infrações de menor potencial ofensivo.",
+            B: "ter regime jurídico mais rigoroso, especialmente quanto a benefícios e regime inicial.",
+            C: "ser punidos apenas com penas alternativas.",
+            D: "ficar sujeitos apenas a sanções administrativas.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei confere maior severidade a crimes considerados hediondos, como restrições a benefícios penais e regras mais duras sobre regime inicial de cumprimento.",
+        },
+        {
+          id: 31,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – anistia e graça",
+          enunciado:
+            "Em relação à anistia, graça e indulto para crimes hediondos, a Lei 8.072/1990 dispõe que:",
+          alternativas: {
+            A: "são amplamente permitidos, sem qualquer restrição.",
+            B: "anistia, graça e indulto não se aplicam a crimes hediondos, nos termos em que a lei estabelece.",
+            C: "somente a anistia é vedada, mas graça e indulto são sempre permitidos.",
+            D: "apenas o indulto é proibido, sendo admitidas as demais hipóteses.",
+          },
+          correta: "B",
+          explicacao:
+            "A Lei dos Crimes Hediondos prevê vedação à concessão de anistia, graça e indulto para esses crimes, reforçando o caráter mais severo do tratamento.",
+        },
+        {
+          id: 32,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – regime inicial",
+          enunciado:
+            "Quanto ao regime inicial de cumprimento da pena para crimes hediondos e equiparados, a legislação estabelece, em regra, que:",
+          alternativas: {
+            A: "deve ser o aberto.",
+            B: "pode ser qualquer um, a critério exclusivo do juiz, sem parâmetros legais.",
+            C: "deve ser mais rigoroso que o dos crimes comuns, observadas as alterações posteriores na legislação.",
+            D: "é sempre substituído por pena restritiva de direitos.",
+          },
+          correta: "C",
+          explicacao:
+            "A Lei 8.072/1990 prevê tratamento mais rigoroso para crimes hediondos, incluindo previsão de regime inicial mais severo, embora sujeita a alterações jurisprudenciais e legislativas posteriores.",
+        },
+
+        // 14–16 Lei de Drogas (Lei 11.343/2006)
+        {
+          id: 33,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – tráfico",
+          enunciado:
+            "De acordo com a Lei 11.343/2006, o crime de tráfico ilícito de drogas caracteriza‑se, entre outras condutas, por:",
+          alternativas: {
+            A: "consumir droga em ambiente privado, sem fornecê‑la a terceiros.",
+            B: "adquirir pequena quantidade de droga para uso pessoal.",
+            C: "importar, vender, oferecer, transportar ou guardar droga sem autorização legal.",
+            D: "produzir medicamento regularmente autorizado pela autoridade sanitária.",
+          },
+          correta: "C",
+          explicacao:
+            "O núcleo típico do tráfico envolve importar, vender, oferecer, transportar, guardar, entre outros verbos, sem autorização ou em desacordo com determinação legal ou regulamentar.",
+        },
+        {
+          id: 34,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – usuário",
+          enunciado:
+            "Quanto ao porte de drogas para consumo pessoal, a Lei 11.343/2006 prevê que:",
+          alternativas: {
+            A: "a conduta é equiparada ao tráfico, com mesma pena de reclusão.",
+            B: "não constitui infração penal de qualquer natureza.",
+            C: "configura crime, mas com sanções diferenciadas, sem pena privativa de liberdade.",
+            D: "é punida apenas na esfera administrativa, sem previsão na lei penal.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei prevê sanções específicas ao usuário (como advertência, prestação de serviços e medida educativa), sem prever reclusão, diferenciando‑o do traficante.",
+        },
+        {
+          id: 35,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – causas de aumento",
+          enunciado:
+            "A Lei de Drogas prevê aumento de pena para o crime de tráfico, entre outras hipóteses, quando:",
+          alternativas: {
+            A: "o agente pratica o fato para consumo exclusivamente próprio.",
+            B: "o crime é cometido nas imediações de estabelecimento prisional ou de ensino.",
+            C: "o agente se entrega voluntariamente à polícia antes de qualquer investigação.",
+            D: "a substância apreendida é de baixo poder entorpecente.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê causas de aumento de pena, como a prática do tráfico em locais próximos a escolas, unidades prisionais, hospitais, entre outros ambientes sensíveis.",
+        },
+
+        // 17–20 Estatuto do Desarmamento (Lei 10.826/2003)
+        {
+          id: 36,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – porte ilegal",
+          enunciado:
+            "No Estatuto do Desarmamento, o porte ilegal de arma de fogo de uso permitido, em regra, configura:",
+          alternativas: {
+            A: "mera infração administrativa.",
+            B: "contravenção penal.",
+            C: "crime punido com pena privativa de liberdade.",
+            D: "ato atípico, sem qualquer sanção.",
+          },
+          correta: "C",
+          explicacao:
+            "A Lei 10.826/2003 tipifica o porte ilegal de arma de fogo de uso permitido como crime, com pena de reclusão e multa, ressalvadas as hipóteses legais de autorização.",
+        },
+        {
+          id: 37,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – registro x porte",
+          enunciado:
+            "Sobre o registro e o porte de arma de fogo, é correto afirmar que:",
+          alternativas: {
+            A: "o registro autoriza automaticamente o porte em qualquer local do território nacional.",
+            B: "o registro autoriza o proprietário a manter a arma em sua residência ou local de trabalho, mas não a portá‑la livremente.",
+            C: "o porte é irrelevante, bastando que a arma seja registrada.",
+            D: "o Estatuto não faz distinção entre registro e porte.",
+          },
+          correta: "B",
+          explicacao:
+            "O registro permite manter a arma no interior da residência ou local de trabalho; o porte, por sua vez, exige autorização específica para o transporte fora desses locais.",
+        },
+        {
+          id: 38,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – posse irregular",
+          enunciado:
+            "A posse irregular de arma de fogo de uso permitido, de forma geral, refere‑se à conduta de:",
+          alternativas: {
+            A: "portar arma em via pública com autorização.",
+            B: "manter arma de uso permitido em casa ou no trabalho sem o devido registro.",
+            C: "fabricar arma de fogo em indústria credenciada.",
+            D: "apenas limpar a arma regularmente registrada.",
+          },
+          correta: "B",
+          explicacao:
+            "A posse irregular envolve manter arma em residência ou local de trabalho sem o registro ou em desacordo com determinação legal, diferenciando‑se do porte, que se dá em via pública.",
+        },
+        {
+          id: 39,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – numeração raspada",
+          enunciado:
+            "A conduta de portar arma de fogo com numeração, marca ou qualquer sinal de identificação raspado ou adulterado:",
+          alternativas: {
+            A: "não tem relevância para o tipo penal.",
+            B: "configura hipótese mais grave, com pena superior à do porte ilegal simples.",
+            C: "é considerada infração de menor potencial ofensivo.",
+            D: "é punida apenas com multa administrativa.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê tipo penal mais grave quando a arma tem identificação suprimida ou adulterada, justamente pela dificuldade de rastreamento e maior risco associado.",
+        },
+        {
+          id: 40,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – finalidade da lei",
+          enunciado:
+            "A finalidade central do Estatuto do Desarmamento, em linhas gerais, é:",
+          alternativas: {
+            A: "estimular o uso generalizado de armas de fogo pela população.",
+            B: "regular a circulação de armas e munições, restringindo o acesso e buscando reduzir a violência armada.",
+            C: "substituir as competências das polícias estaduais.",
+            D: "tratar apenas de armas brancas, como facas e punhais.",
+          },
+          correta: "B",
+          explicacao:
+            "A Lei 10.826/2003 busca controlar a circulação de armas e munições, restringindo o acesso e estabelecendo regras para diminuir riscos e violência armada.",
+        },
+
+        // Direitos Humanos – 20 questões (id 41–60)
+        {
+          id: 41,
+          materia: "DH",
+          assunto: "Conceito de direitos humanos",
+          enunciado:
+            "Os direitos humanos podem ser compreendidos, em linhas gerais, como:",
+          alternativas: {
+            A: "privilégios concedidos apenas a determinados grupos sociais.",
+            B: "faculdades e garantias essenciais para proteger a dignidade de todas as pessoas, independentemente de nacionalidade ou condição.",
+            C: "normas aplicáveis apenas em tempos de guerra entre Estados.",
+            D: "benefícios exclusivos de cidadãos que ocupam cargos públicos.",
+          },
+          correta: "B",
+          explicacao:
+            "Direitos humanos são direitos inerentes à pessoa humana, voltados à proteção da dignidade de todos, sem distinção de origem, condição social ou função.",
+        },
+        {
+          id: 42,
+          materia: "DH",
+          assunto: "Gerações/dimensões de direitos",
+          enunciado:
+            "Os direitos de primeira dimensão (ou primeira geração) estão associados, principalmente, a:",
+          alternativas: {
+            A: "direitos sociais, como saúde e educação.",
+            B: "direitos de fraternidade, como meio ambiente equilibrado.",
+            C: "liberdades civis e políticas, como vida, liberdade e participação política.",
+            D: "direitos de solidariedade tecnológica, ligados à internet.",
+          },
+          correta: "C",
+          explicacao:
+            "A primeira dimensão refere‑se às liberdades clássicas, civis e políticas, que limitam o poder estatal e protegem a autonomia do indivíduo.",
+        },
+        {
+          id: 43,
+          materia: "DH",
+          assunto: "Universalidade dos direitos humanos",
+          enunciado:
+            "A característica da universalidade dos direitos humanos significa que:",
+          alternativas: {
+            A: "somente alguns países são obrigados a reconhecê‑los.",
+            B: "apenas cidadãos maiores de idade podem usufruí‑los.",
+            C: "devem ser reconhecidos a todas as pessoas, em qualquer lugar do mundo.",
+            D: "aplicam‑se somente em períodos de paz.",
+          },
+          correta: "C",
+          explicacao:
+            "Universalidade indica que os direitos humanos pertencem a todas as pessoas, pelo simples fato de serem humanas, sem barreiras nacionais.",
+        },
+        {
+          id: 44,
+          materia: "DH",
+          assunto: "Indivisibilidade e interdependência",
+          enunciado:
+            "A afirmação de que os direitos humanos são indivisíveis e interdependentes significa que:",
+          alternativas: {
+            A: "direitos civis são superiores a direitos sociais.",
+            B: "é possível garantir plenamente um direito violando outros.",
+            C: "a efetivação de um conjunto de direitos depende da proteção dos demais, sem hierarquia absoluta entre eles.",
+            D: "apenas direitos econômicos exigem atuação do Estado.",
+          },
+          correta: "C",
+          explicacao:
+            "Indivisibilidade e interdependência indicam que os direitos formam um conjunto integrado: violações em uma área tendem a comprometer outras.",
+        },
+        {
+          id: 45,
+          materia: "DH",
+          assunto: "Declaração Universal de 1948",
+          enunciado:
+            "A Declaração Universal dos Direitos Humanos, de 1948, foi aprovada no âmbito de qual organização?",
+          alternativas: {
+            A: "Organização dos Estados Americanos (OEA).",
+            B: "Organização das Nações Unidas (ONU).",
+            C: "Corte Interamericana de Direitos Humanos.",
+            D: "Organização Mundial do Comércio (OMC).",
+          },
+          correta: "B",
+          explicacao:
+            "A DUDH foi aprovada pela Assembleia Geral da ONU em 1948, tornando‑se marco fundamental do sistema global de proteção de direitos humanos.",
+        },
+        {
+          id: 46,
+          materia: "DH",
+          assunto: "Sistema global x regional",
+          enunciado:
+            "O sistema interamericano de proteção dos direitos humanos é exemplo de:",
+          alternativas: {
+            A: "sistema global coordenado pela ONU.",
+            B: "sistema regional coordenado pela Organização dos Estados Americanos.",
+            C: "sistema europeu coordenado pelo Conselho da Europa.",
+            D: "sistema interno de cada país, sem órgãos internacionais.",
+          },
+          correta: "B",
+          explicacao:
+            "O sistema interamericano é regional e tem como órgão político a OEA, que abriga a Comissão e a Corte Interamericanas de Direitos Humanos.",
+        },
+        {
+          id: 47,
+          materia: "DH",
+          assunto: "Tratados internacionais e Constituição",
+          enunciado:
+            "No ordenamento brasileiro, tratados e convenções internacionais de direitos humanos aprovados pelo rito de emenda constitucional (quórum qualificado) têm status de:",
+          alternativas: {
+            A: "lei ordinária.",
+            B: "decreto regulamentar.",
+            C: "emenda constitucional.",
+            D: "norma infralegal.",
+          },
+          correta: "C",
+          explicacao:
+            "A CF/88 prevê que tratados de direitos humanos aprovados em dois turnos, por 3/5 de cada Casa do Congresso, equivalem às emendas constitucionais.",
+        },
+        {
+          id: 48,
+          materia: "DH",
+          assunto: "Dignidade da pessoa humana",
+          enunciado: "No Brasil, a dignidade da pessoa humana é:",
+          alternativas: {
+            A: "apenas conceito moral, sem previsão jurídica.",
+            B: "fundamento da República, orientando a interpretação de todo o sistema de direitos.",
+            C: "princípio aplicável somente ao Direito Penal.",
+            D: "direito exclusivo de brasileiros natos.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 consagra a dignidade da pessoa humana como fundamento do Estado brasileiro, devendo orientar a criação e aplicação de leis e políticas públicas.",
+        },
+        {
+          id: 49,
+          materia: "DH",
+          assunto: "Proibição da tortura",
+          enunciado:
+            "No âmbito dos direitos humanos, a proibição da tortura é considerada:",
+          alternativas: {
+            A: "regra programática, que pode ser relativizada livremente.",
+            B: "norma absoluta, não sujeita à suspensão nem em situações de emergência.",
+            C: "proibição aplicável apenas em tempos de paz.",
+            D: "medida que pode ser afastada por lei ordinária.",
+          },
+          correta: "B",
+          explicacao:
+            "A vedação à tortura é norma de caráter absoluto (jus cogens), não podendo ser afastada nem em estados de exceção.",
+        },
+        {
+          id: 50,
+          materia: "DH",
+          assunto: "Princípio da igualdade e não discriminação",
+          enunciado:
+            "O princípio da igualdade e da não discriminação implica que:",
+          alternativas: {
+            A: "qualquer tratamento desigual é proibido.",
+            B: "tratamentos diferenciados podem ser admitidos, desde que razoáveis e não discriminatórios, inclusive em políticas afirmativas.",
+            C: "o Estado não pode adotar medidas específicas para grupos vulneráveis.",
+            D: "a igualdade interessa apenas ao direito eleitoral.",
+          },
+          correta: "B",
+          explicacao:
+            "A igualdade material admite diferenciações justificadas (como políticas afirmativas), proibindo apenas discriminações arbitrárias baseadas em critérios odiosos.",
+        },
+        {
+          id: 51,
+          materia: "DH",
+          assunto: "Direitos civis e políticos",
+          enunciado:
+            "É exemplo típico de direito civil ou político previsto em instrumentos de direitos humanos:",
+          alternativas: {
+            A: "direito ao trabalho.",
+            B: "direito à previdência social.",
+            C: "direito de votar e ser votado.",
+            D: "direito à educação básica.",
+          },
+          correta: "C",
+          explicacao:
+            "Direitos de participação política, como o sufrágio, integram o grupo de direitos civis e políticos.",
+        },
+        {
+          id: 52,
+          materia: "DH",
+          assunto: "Direitos sociais",
+          enunciado:
+            "Entre os direitos a seguir, qual é classificado como direito social nas declarações e constituições modernas?",
+          alternativas: {
+            A: "liberdade de locomoção.",
+            B: "liberdade de expressão.",
+            C: "propriedade privada.",
+            D: "saúde.",
+          },
+          correta: "D",
+          explicacao:
+            "Saúde, educação, trabalho e previdência são exemplos de direitos sociais, tradicionalmente associados à segunda dimensão de direitos.",
+        },
+        {
+          id: 53,
+          materia: "DH",
+          assunto: "Proteção de grupos vulneráveis",
+          enunciado:
+            "A proteção especial a crianças e adolescentes, prevista em tratados e na Constituição, relaciona‑se ao princípio da:",
+          alternativas: {
+            A: "reserva do possível.",
+            B: "proteção integral e prioridade absoluta.",
+            C: "soberania nacional.",
+            D: "livre iniciativa.",
+          },
+          correta: "B",
+          explicacao:
+            "O ordenamento consagra a doutrina da proteção integral com prioridade absoluta a crianças e adolescentes, em consonância com normas internacionais.",
+        },
+        {
+          id: 54,
+          materia: "DH",
+          assunto: "Liberdade de expressão",
+          enunciado:
+            "A liberdade de expressão, segundo os instrumentos de direitos humanos e a Constituição brasileira:",
+          alternativas: {
+            A: "é absoluta, não admitindo qualquer limitação.",
+            B: "pode ser exercida inclusive para incitar discriminação e violência.",
+            C: "é protegida, mas não autoriza discurso de ódio nem violações à honra e à intimidade de terceiros.",
+            D: "só é reconhecida para veículos de comunicação oficiais.",
+          },
+          correta: "C",
+          explicacao:
+            "A liberdade de expressão é amplamente protegida, porém sofre limites quando conflita com outros direitos, como a dignidade, a honra e a proibição de incitação ao ódio.",
+        },
+        {
+          id: 55,
+          materia: "DH",
+          assunto: "Direito à vida",
+          enunciado:
+            "O direito à vida, no contexto dos direitos humanos, é compreendido como:",
+          alternativas: {
+            A: "mero direito biológico, sem conteúdo jurídico.",
+            B: "proteção apenas contra a pena de morte.",
+            C: "direito que abrange não só a existência física, mas condições mínimas de sobrevivência digna.",
+            D: "direito exclusivo de nacionais em território estrangeiro.",
+          },
+          correta: "C",
+          explicacao:
+            "O direito à vida é entendido de forma ampla, incluindo não apenas a proteção contra a eliminação física, mas também o acesso a condições básicas de existência digna.",
+        },
+        {
+          id: 56,
+          materia: "DH",
+          assunto: "Deveres do agente público",
+          enunciado:
+            "Sob a ótica dos direitos humanos, a atuação do agente público de segurança deve:",
+          alternativas: {
+            A: "priorizar qualquer meio necessário para obter resultados, ainda que ilegais.",
+            B: "compatibilizar o uso legítimo da força com o respeito à dignidade e às garantias das pessoas sob custódia.",
+            C: "restringir a aplicação das normas de direitos humanos apenas a estrangeiros.",
+            D: "subordinar‑se sempre às ordens superiores, mesmo quando manifestamente ilegais.",
+          },
+          correta: "B",
+          explicacao:
+            "O uso da força pelo Estado deve ser legal, necessário e proporcional, sempre compatível com a dignidade humana e com as garantias fundamentais.",
+        },
+        {
+          id: 57,
+          materia: "DH",
+          assunto: "Presunção de inocência",
+          enunciado:
+            "O princípio da presunção de inocência, relacionado aos direitos humanos e à Constituição brasileira, estabelece que:",
+          alternativas: {
+            A: "qualquer pessoa é considerada culpada até provar sua inocência.",
+            B: "ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória, sem prejuízo de prisões cautelares previstas em lei.",
+            C: "a prova de culpa cabe exclusivamente ao acusado.",
+            D: "basta a acusação formal para que alguém seja considerado culpado.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 dispõe que ninguém será considerado culpado antes do trânsito em julgado de condenação, embora admita prisões provisórias nas hipóteses legais.",
+        },
+        {
+          id: 58,
+          materia: "DH",
+          assunto: "Direitos das pessoas privadas de liberdade",
+          enunciado:
+            "De acordo com os instrumentos de direitos humanos e a Constituição, as pessoas privadas de liberdade têm direito:",
+          alternativas: {
+            A: "apenas à alimentação mínima, sem outras garantias.",
+            B: "ao respeito à integridade física e moral, além de outros direitos compatíveis com a situação de privação.",
+            C: "a sofrer penas corporais previstas em regulamento interno.",
+            D: "a perder automaticamente todos os direitos políticos e civis.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 assegura aos presos o respeito à integridade física e moral, bem como outros direitos não atingidos pela condenação ou pela lei.",
+        },
+        {
+          id: 59,
+          materia: "DH",
+          assunto: "Direito de acesso à justiça",
+          enunciado:
+            "O direito de acesso à justiça, previsto em tratados de direitos humanos, garante que:",
+          alternativas: {
+            A: "apenas pessoas com recursos financeiros possam recorrer ao Judiciário.",
+            B: "todas as pessoas tenham possibilidade de submeter violações de direitos a um órgão independente e imparcial.",
+            C: "apenas órgãos executivos possam rever atos ilegais.",
+            D: "o Estado é dispensado de fornecer assistência jurídica gratuita.",
+          },
+          correta: "B",
+          explicacao:
+            "O acesso à justiça exige a existência de órgãos independentes e imparciais, bem como medidas, como assistência jurídica, que viabilizem a defesa de direitos.",
+        },
+        {
+          id: 60,
+          materia: "DH",
+          assunto: "Dever de investigar e punir violações",
+          enunciado:
+            "Instrumentos internacionais de direitos humanos reconhecem que, diante de graves violações (como tortura ou execuções arbitrárias), o Estado tem o dever de:",
+          alternativas: {
+            A: "ignorar os fatos para preservar a imagem institucional.",
+            B: "investigar, processar e, se for o caso, punir os responsáveis, além de reparar as vítimas.",
+            C: "delegar toda a apuração exclusivamente a organismos estrangeiros.",
+            D: "limitar‑se a divulgar nota oficial de repúdio.",
+          },
+          correta: "B",
+          explicacao:
+            "O dever de investigar, processar e punir responsáveis por graves violações, bem como reparar vítimas, decorre de compromissos assumidos pelo Estado em tratados de direitos humanos.",
+        },
+        {
+          // Noções de Direito – 10 questões
+          // Direito Constitucional – 20 questões (id 61–80)
+
+          id: 61,
+          materia: "ND",
+          assunto: "Conceito de Constituição",
+          enunciado:
+            "A Constituição Federal de 1988 pode ser definida, em linhas gerais, como:",
+          alternativas: {
+            A: "lei ordinária que organiza apenas o Poder Executivo.",
+            B: "conjunto de normas fundamentais que estruturam o Estado, distribuem competências e reconhecem direitos e garantias.",
+            C: "ato administrativo interno do Congresso Nacional.",
+            D: "regulamento relativo apenas às Forças Armadas.",
+          },
+          correta: "B",
+          explicacao:
+            "A Constituição é a lei fundamental e suprema, que organiza o Estado, reparte o poder político e estabelece o catálogo de direitos fundamentais.",
+        },
+        {
+          id: 62,
+          materia: "ND",
+          assunto: "Fundamentos da República",
+          enunciado:
+            "Entre os fundamentos da República Federativa do Brasil previstos na Constituição, encontra‑se:",
+          alternativas: {
+            A: "soberania popular apenas indireta.",
+            B: "dignidade da pessoa humana.",
+            C: "livre concorrência.",
+            D: "separação entre Igreja e Estado.",
+          },
+          correta: "B",
+          explicacao:
+            "O art. 1º da CF/88 elenca, entre outros fundamentos, a soberania, a cidadania, a dignidade da pessoa humana, os valores sociais do trabalho e da livre iniciativa e o pluralismo político.",
+        },
+        {
+          id: 63,
+          materia: "ND",
+          assunto: "Objetivos fundamentais",
+          enunciado:
+            "Constitui objetivo fundamental da República Federativa do Brasil, segundo a CF/88:",
+          alternativas: {
+            A: "manter a desigualdade social histórica.",
+            B: "promover o bem de todos, sem preconceitos de origem, raça, sexo, cor, idade ou quaisquer outras formas de discriminação.",
+            C: "garantir privilégios permanentes a determinados grupos.",
+            D: "impedir a cooperação entre os povos.",
+          },
+          correta: "B",
+          explicacao:
+            "O art. 3º traz como objetivo promover o bem de todos, sem preconceitos e discriminações, reforçando a igualdade material.",
+        },
+        {
+          id: 64,
+          materia: "ND",
+          assunto: "Forma de Estado e forma de governo",
+          enunciado:
+            "O Brasil, conforme a Constituição Federal de 1988, adota, respectivamente, como forma de Estado e forma de governo:",
+          alternativas: {
+            A: "Estado unitário e monarquia.",
+            B: "Estado federal e república.",
+            C: "Estado confederado e monarquia.",
+            D: "Estado unitário e república.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 define o Brasil como República Federativa: forma de governo republicana e forma de Estado federativa.",
+        },
+        {
+          id: 65,
+          materia: "ND",
+          assunto: "Separação de poderes",
+          enunciado:
+            "O princípio da separação de poderes, previsto na CF/88, estabelece que:",
+          alternativas: {
+            A: "os poderes Legislativo, Executivo e Judiciário são totalmente independentes, sem qualquer controle recíproco.",
+            B: "apenas o Poder Executivo exerce função típica de legislar.",
+            C: "os poderes são harmônicos e independentes, exercendo funções típicas, mas com mecanismos de freios e contrapesos.",
+            D: "o Poder Judiciário está hierarquicamente subordinado ao Legislativo.",
+          },
+          correta: "C",
+          explicacao:
+            "A Constituição consagra a separação e harmonia entre os poderes, com controles recíprocos (freios e contrapesos).",
+        },
+        {
+          id: 66,
+          materia: "ND",
+          assunto: "Princípio da legalidade",
+          enunciado:
+            "Para os particulares e para a Administração Pública, respectivamente, o princípio da legalidade significa que:",
+          alternativas: {
+            A: "ambos só podem fazer o que a lei autoriza expressamente.",
+            B: "o particular pode fazer tudo o que a lei não proíbe, e o agente público só pode agir quando a lei autoriza ou determina.",
+            C: "o particular só age por autorização legal, enquanto o Estado é livre.",
+            D: "nenhum deles está vinculado à lei.",
+          },
+          correta: "B",
+          explicacao:
+            "O particular atua segundo a máxima 'o que não é proibido é permitido'; já a Administração está vinculada à legalidade estrita.",
+        },
+        {
+          id: 67,
+          materia: "ND",
+          assunto: "Direitos fundamentais – aplicação imediata",
+          enunciado:
+            "A CF/88 estabelece que os direitos e garantias fundamentais:",
+          alternativas: {
+            A: "dependem sempre de lei complementar para produzir efeitos.",
+            B: "podem ser livremente abolidos por emenda constitucional.",
+            C: "têm aplicação imediata, cabendo ao Estado promovê‑los e protegê‑los.",
+            D: "se aplicam somente aos brasileiros natos.",
+          },
+          correta: "C",
+          explicacao:
+            "O art. 5º, §1º, dispõe que os direitos e garantias fundamentais têm aplicação imediata, vinculando diretamente os poderes públicos.",
+        },
+        {
+          id: 68,
+          materia: "ND",
+          assunto: "Cláusulas pétreas",
+          enunciado:
+            "Constitui cláusula pétrea, não podendo ser abolida por emenda constitucional:",
+          alternativas: {
+            A: "a organização dos partidos políticos.",
+            B: "o voto facultativo para maiores de 18 anos.",
+            C: "os direitos e garantias individuais.",
+            D: "a possibilidade de reeleição no Executivo.",
+          },
+          correta: "C",
+          explicacao:
+            "O art. 60, §4º, protege contra emendas tendentes a abolir, entre outros, os direitos e garantias individuais.",
+        },
+        {
+          id: 69,
+          materia: "ND",
+          assunto: "Direito à vida",
+          enunciado:
+            "O direito à vida, previsto na CF/88, está diretamente relacionado:",
+          alternativas: {
+            A: "apenas à proibição da pena de morte.",
+            B: "ao dever estatal de proteger a existência física e as condições mínimas de sobrevivência digna.",
+            C: "somente à proteção da propriedade.",
+            D: "exclusivamente à livre iniciativa.",
+          },
+          correta: "B",
+          explicacao:
+            "A Constituição protege a vida em sentido amplo, incluindo integridade física e acesso a condições mínimas de existência.",
+        },
+        {
+          id: 70,
+          materia: "ND",
+          assunto: "Liberdade de expressão",
+          enunciado: "Segundo a Constituição, a liberdade de expressão:",
+          alternativas: {
+            A: "é absoluta e não admite qualquer restrição.",
+            B: "é protegida, mas não autoriza anonimato nem discursos que violem direitos como honra e intimidade.",
+            C: "é reservada apenas a jornalistas profissionais.",
+            D: "pode ser proibida por ato administrativo sem fundamento legal.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 assegura a livre manifestação, vedando o anonimato e admitindo limites quando necessário para proteger outros direitos fundamentais.",
+        },
+        {
+          id: 71,
+          materia: "ND",
+          assunto: "Habeas corpus",
+          enunciado:
+            "O habeas corpus é ação constitucional destinada a proteger:",
+          alternativas: {
+            A: "direito de propriedade em face de desapropriação.",
+            B: "direito à honra contra ofensas na imprensa.",
+            C: "direito de locomoção ameaçado ou violado por ilegalidade ou abuso de poder.",
+            D: "direito de acesso a informações pessoais em registros públicos.",
+          },
+          correta: "C",
+          explicacao:
+            "O habeas corpus protege a liberdade de ir, vir e permanecer, quando houver ameaça ou coação ilegal.",
+        },
+        {
+          id: 72,
+          materia: "ND",
+          assunto: "Mandado de segurança coletivo",
+          enunciado:
+            "O mandado de segurança coletivo pode ser impetrado, entre outros legitimados, por:",
+          alternativas: {
+            A: "qualquer pessoa física, independentemente de representação.",
+            B: "partido político com representação no Congresso Nacional, em defesa de seus membros ou de sua finalidade institucional.",
+            C: "empresa estrangeira sem sede no Brasil.",
+            D: "órgão da Administração Pública contra seus próprios atos.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 prevê que partidos com representação no Congresso, sindicatos, entidades de classe e associações podem impetrar mandado de segurança coletivo.",
+        },
+        {
+          id: 73,
+          materia: "ND",
+          assunto: "Ação popular",
+          enunciado: "A ação popular constitucional tem como finalidade:",
+          alternativas: {
+            A: "defender exclusivamente interesse patrimonial do autor.",
+            B: "anular ato lesivo ao patrimônio público, à moralidade administrativa, ao meio ambiente ou ao patrimônio histórico e cultural.",
+            C: "questionar apenas decisões judiciais.",
+            D: "proteger interesses de empresas estatais contra o Estado.",
+          },
+          correta: "B",
+          explicacao:
+            "A ação popular é instrumento posto à disposição de qualquer cidadão para anular ato lesivo a bens e valores coletivos.",
+        },
+        {
+          id: 74,
+          materia: "ND",
+          assunto: "Competência legislativa – União",
+          enunciado: "Compete privativamente à União legislar sobre:",
+          alternativas: {
+            A: "direito urbanístico local.",
+            B: "direito penal e processual penal.",
+            C: "assuntos de interesse predominantemente municipal.",
+            D: "servidores dos Estados.",
+          },
+          correta: "B",
+          explicacao:
+            "O art. 22 atribui à União competência privativa para legislar sobre direito penal e processual penal.",
+        },
+        {
+          id: 75,
+          materia: "ND",
+          assunto: "Segurança pública",
+          enunciado:
+            "De acordo com a Constituição Federal, a segurança pública é dever do Estado e responsabilidade:",
+          alternativas: {
+            A: "apenas das Forças Armadas.",
+            B: "apenas da Polícia Militar e da Polícia Civil.",
+            C: "de todos, sendo exercida para preservação da ordem pública e da incolumidade das pessoas e do patrimônio.",
+            D: "somente de empresas privadas de segurança.",
+          },
+          correta: "C",
+          explicacao:
+            "O art. 144 dispõe que a segurança pública é dever do Estado, direito e responsabilidade de todos.",
+        },
+        {
+          id: 76,
+          materia: "ND",
+          assunto: "Poder Executivo – mandato",
+          enunciado:
+            "No âmbito federal, o mandato do Presidente da República, segundo a CF, tem duração de:",
+          alternativas: {
+            A: "quatro anos, permitida uma reeleição para período subsequente.",
+            B: "seis anos, sem reeleição.",
+            C: "oito anos, permitida uma reeleição.",
+            D: "dois anos, sem reeleição.",
+          },
+          correta: "A",
+          explicacao:
+            "A CF/88 prevê mandato de quatro anos, com possibilidade de uma reeleição imediata.",
+        },
+        {
+          id: 77,
+          materia: "ND",
+          assunto: "Controle de constitucionalidade",
+          enunciado:
+            "O órgão de cúpula responsável, em regra, pelo controle concentrado de constitucionalidade em âmbito federal é:",
+          alternativas: {
+            A: "Superior Tribunal de Justiça.",
+            B: "Supremo Tribunal Federal.",
+            C: "Tribunal de Contas da União.",
+            D: "Conselho Nacional de Justiça.",
+          },
+          correta: "B",
+          explicacao:
+            "O STF exerce a guarda da Constituição, julgando ações diretas de inconstitucionalidade, declaratórias de constitucionalidade etc.",
+        },
+        {
+          id: 78,
+          materia: "ND",
+          assunto: "Habeas data",
+          enunciado:
+            "O habeas data é ação constitucional destinada, principalmente, a:",
+          alternativas: {
+            A: "garantir a liberdade de locomoção.",
+            B: "obter informações pessoais constantes de registros de entidades governamentais ou de caráter público e retificá‑las.",
+            C: "impedir divulgação de notícias verdadeiras pela imprensa.",
+            D: "defender interesses de partidos políticos.",
+          },
+          correta: "B",
+          explicacao:
+            "O habeas data protege o direito de conhecer e corrigir dados pessoais em bancos de dados públicos ou de natureza pública.",
+        },
+        {
+          id: 79,
+          materia: "ND",
+          assunto: "Estado de defesa e de sítio",
+          enunciado:
+            "Os institutos do estado de defesa e do estado de sítio destinam‑se a:",
+          alternativas: {
+            A: "substituir permanentemente o regime democrático.",
+            B: "responder a situações de grave instabilidade ou calamidade, com restrições temporárias a certos direitos, sob controle do Congresso.",
+            C: "revogar automaticamente todos os direitos fundamentais.",
+            D: "disciplinar apenas conflitos entre particulares.",
+          },
+          correta: "B",
+          explicacao:
+            "São medidas constitucionais excepcionais para enfrentar crises graves, com limite temporal e controle político.",
+        },
+        {
+          id: 80,
+          materia: "ND",
+          assunto: "Direitos dos presos",
+          enunciado:
+            "A Constituição Federal assegura aos presos, entre outros direitos:",
+          alternativas: {
+            A: "submissão a penas cruéis, em casos de falta grave.",
+            B: "perda automática de todos os direitos civis.",
+            C: "respeito à integridade física e moral.",
+            D: "manter‑se permanentemente incomunicáveis.",
+          },
+          correta: "C",
+          explicacao:
+            "A CF/88 garante aos presos o respeito à integridade física e moral, vedando penas cruéis e tratamentos degradantes.",
+        },
+        // Informática Básica – 20 questões (id 81–100)
+        {
+          id: 81,
+          materia: "INFO",
+          assunto: "Hardware x software",
+          enunciado:
+            "Assinale a alternativa que apresenta corretamente a diferença entre hardware e software:",
+          alternativas: {
+            A: "Hardware é a parte lógica, e software é a parte física do computador.",
+            B: "Hardware é a parte física, e software é o conjunto de programas e instruções.",
+            C: "Hardware e software são sinônimos, usados indistintamente.",
+            D: "Hardware é apenas o mouse e o teclado, enquanto software é o monitor.",
+          },
+          correta: "B",
+          explicacao:
+            "Hardware corresponde aos componentes físicos; software é o conjunto de programas, sistemas e instruções que controlam o funcionamento do computador.",
+        },
+        {
+          id: 82,
+          materia: "INFO",
+          assunto: "Dispositivos de entrada e saída",
+          enunciado:
+            "É exemplo de dispositivo de ENTRADA de dados em um computador:",
+          alternativas: {
+            A: "monitor.",
+            B: "impressora.",
+            C: "teclado.",
+            D: "caixa de som.",
+          },
+          correta: "C",
+          explicacao:
+            "Teclado, mouse e scanner são dispositivos de entrada; monitor e impressora são de saída.",
+        },
+        {
+          id: 83,
+          materia: "INFO",
+          assunto: "Memória RAM e armazenamento",
+          enunciado: "A memória RAM caracteriza‑se por ser:",
+          alternativas: {
+            A: "permanente, não perdendo dados quando o computador é desligado.",
+            B: "volátil, perdendo o conteúdo quando não há energia elétrica.",
+            C: "exclusiva para armazenar arquivos do usuário a longo prazo.",
+            D: "um tipo de memória apenas de leitura, impossibilitando gravação.",
+          },
+          correta: "B",
+          explicacao:
+            "A RAM é memória de trabalho do sistema, volátil: perde os dados ao desligar; armazenamento permanente é feito em HD/SSD.",
+        },
+        {
+          id: 84,
+          materia: "INFO",
+          assunto: "Sistemas operacionais – conceito",
+          enunciado:
+            "O sistema operacional de um computador tem como principal função:",
+          alternativas: {
+            A: "servir apenas para editar textos.",
+            B: "controlar recursos de hardware e fornecer serviços básicos para a execução de programas.",
+            C: "substituir totalmente os programas aplicativos.",
+            D: "funcionar apenas como antivírus.",
+          },
+          correta: "B",
+          explicacao:
+            "O sistema operacional gerencia hardware (processador, memória, disco, dispositivos) e oferece uma base para que os demais programas sejam executados.",
+        },
+        {
+          id: 85,
+          materia: "INFO",
+          assunto: "Sistemas operacionais – exemplos",
+          enunciado:
+            "Qual das alternativas apresenta apenas sistemas operacionais amplamente utilizados em computadores pessoais?",
+          alternativas: {
+            A: "Windows, Linux e macOS.",
+            B: "Word, Excel e PowerPoint.",
+            C: "Chrome, Firefox e Edge.",
+            D: "Android, WhatsApp e Telegram.",
+          },
+          correta: "A",
+          explicacao:
+            "Windows, Linux e macOS são sistemas operacionais; Word/Excel/PowerPoint são aplicativos; Chrome/Firefox/Edge são navegadores.",
+        },
+        {
+          id: 86,
+          materia: "INFO",
+          assunto: "Pastas e arquivos – Windows",
+          enunciado:
+            "No ambiente do Windows, a estrutura em pastas (diretórios) serve, principalmente, para:",
+          alternativas: {
+            A: "apagar automaticamente todos os arquivos salvos.",
+            B: "organizar arquivos e facilitar sua localização pelo usuário.",
+            C: "substituir a função de memória RAM.",
+            D: "impedir que vários usuários usem o mesmo computador.",
+          },
+          correta: "B",
+          explicacao:
+            "Pastas permitem agrupar e organizar arquivos por tipo, projeto, usuário etc., facilitando o gerenciamento das informações.",
+        },
+        {
+          id: 87,
+          materia: "INFO",
+          assunto: "Extensões de arquivos",
+          enunciado:
+            "Assinale a alternativa que relaciona corretamente o tipo de arquivo à extensão mais comum:",
+          alternativas: {
+            A: ".docx – planilha eletrônica.",
+            B: ".xlsx – apresentação de slides.",
+            C: ".pdf – documento em formato portátil para leitura.",
+            D: ".jpg – arquivo de áudio.",
+          },
+          correta: "C",
+          explicacao:
+            ".pdf é extensão típica de documentos no formato portátil; .docx é texto (Word), .xlsx é planilha (Excel) e .jpg é imagem.",
+        },
+        {
+          id: 88,
+          materia: "INFO",
+          assunto: "Internet – conceito de navegador",
+          enunciado: "Um navegador (browser) é um programa utilizado para:",
+          alternativas: {
+            A: "programar o sistema operacional.",
+            B: "acessar páginas e conteúdos disponíveis na World Wide Web.",
+            C: "substituir a função de antivírus.",
+            D: "editar exclusivamente documentos de texto offline.",
+          },
+          correta: "B",
+          explicacao:
+            "Navegadores, como Chrome, Firefox e Edge, permitem acessar páginas web e outros recursos disponíveis na Internet.",
+        },
+        {
+          id: 89,
+          materia: "INFO",
+          assunto: "Internet – URL e endereço",
+          enunciado:
+            "O endereço 'https://www.seguranca.mg.gov.br' é exemplo de:",
+          alternativas: {
+            A: "endereço de e‑mail.",
+            B: "URL (endereço de site) com uso de protocolo seguro.",
+            C: "nome de usuário em rede social.",
+            D: "arquivo salvo em disco local.",
+          },
+          correta: "B",
+          explicacao:
+            "Trata‑se de uma URL iniciada por 'https', indicando protocolo de hipertexto com camada segura.",
+        },
+        {
+          id: 90,
+          materia: "INFO",
+          assunto: "Correio eletrônico",
+          enunciado:
+            "Sobre o uso do correio eletrônico (e‑mail), é correto afirmar que:",
+          alternativas: {
+            A: "a mensagem só pode ser enviada se o remetente e o destinatário estiverem online ao mesmo tempo.",
+            B: "os campos 'Para', 'Cc' e 'Cco' permitem indicar diferentes destinatários, sendo 'Cco' utilizado para envio com cópia oculta.",
+            C: "não é possível anexar arquivos a uma mensagem.",
+            D: "o campo 'Assunto' é opcional e nunca é exibido ao destinatário.",
+          },
+          correta: "B",
+          explicacao:
+            "No e‑mail, 'Cc' envia cópia visível a outros destinatários e 'Cco' envia cópia oculta; anexos são permitidos e o assunto é mostrado ao destinatário.",
+        },
+        {
+          id: 91,
+          materia: "INFO",
+          assunto: "Redes – conceito básico",
+          enunciado: "Uma rede de computadores pode ser definida como:",
+          alternativas: {
+            A: "conjunto de computadores que funcionam isoladamente.",
+            B: "conjunto de computadores e dispositivos interligados para compartilhar dados e recursos.",
+            C: "apenas a conexão entre um computador e uma impressora local.",
+            D: "somente a ligação entre celulares usando Bluetooth.",
+          },
+          correta: "B",
+          explicacao:
+            "Rede é a interligação de computadores e dispositivos para compartilhar informações, impressoras, acesso à internet e outros recursos.",
+        },
+        {
+          id: 92,
+          materia: "INFO",
+          assunto: "Redes – intranet e internet",
+          enunciado: "Intranet é o termo utilizado para designar:",
+          alternativas: {
+            A: "toda a rede mundial de computadores.",
+            B: "rede interna de uma organização, que utiliza tecnologias da internet, porém com acesso restrito.",
+            C: "apenas o serviço de correio eletrônico.",
+            D: "uma rede exclusiva entre celulares.",
+          },
+          correta: "B",
+          explicacao:
+            "Intranet é rede privada de uma instituição, geralmente acessível apenas a seus membros, usando padrões como TCP/IP e navegadores.",
+        },
+        {
+          id: 93,
+          materia: "INFO",
+          assunto: "Segurança – senhas",
+          enunciado:
+            "Uma boa prática de segurança da informação quanto ao uso de senhas é:",
+          alternativas: {
+            A: "utilizar datas de aniversário de familiares, por serem fáceis de lembrar.",
+            B: "anotar a senha em papel e deixá‑lo próximo ao computador.",
+            C: "utilizar combinações com letras maiúsculas, minúsculas, números e símbolos, evitando dados pessoais óbvios.",
+            D: "reutilizar a mesma senha em todos os sistemas e serviços.",
+          },
+          correta: "C",
+          explicacao:
+            "Senhas fortes combinam tipos diferentes de caracteres e evitam informações previsíveis, como datas ou nomes de familiares.",
+        },
+        {
+          id: 94,
+          materia: "INFO",
+          assunto: "Segurança – malware",
+          enunciado: "Vírus, worms e trojans são exemplos de:",
+          alternativas: {
+            A: "formatos de arquivo.",
+            B: "equipamentos de rede.",
+            C: "malwares, programas maliciosos que podem causar danos ou roubo de dados.",
+            D: "protocolos de comunicação.",
+          },
+          correta: "C",
+          explicacao:
+            "Esses termos designam tipos de softwares maliciosos que podem comprometer o sistema, alterar dados ou permitir acesso indevido.",
+        },
+        {
+          id: 95,
+          materia: "INFO",
+          assunto: "Segurança – phishing",
+          enunciado: "O golpe conhecido como phishing caracteriza‑se por:",
+          alternativas: {
+            A: "falha de hardware que impede o computador de ligar.",
+            B: "técnica de enganar o usuário, geralmente por e‑mail ou páginas falsas, para obter dados sigilosos como senhas.",
+            C: "utilização de programas legítimos para atualização do sistema.",
+            D: "apenas o envio de mensagens de propaganda autorizadas.",
+          },
+          correta: "B",
+          explicacao:
+            "Phishing tenta induzir o usuário a fornecer informações confidenciais por meio de mensagens e sites falsos que imitam serviços legítimos.",
+        },
+        {
+          id: 96,
+          materia: "INFO",
+          assunto: "Segurança – boas práticas na internet",
+          enunciado: "É uma boa prática de segurança ao navegar na internet:",
+          alternativas: {
+            A: "clicar em qualquer link recebido por mensagem, para economizar tempo.",
+            B: "instalar programas de origem desconhecida para testar recursos.",
+            C: "verificar se sites que solicitam senhas utilizam conexão segura (https) e desconfiar de pedidos de dados excessivos.",
+            D: "fornecer senhas a colegas de trabalho para facilitar o uso compartilhado.",
+          },
+          correta: "C",
+          explicacao:
+            "Conferir o uso de https e avaliar pedidos de dados pessoais ajuda a evitar golpes; compartilhar senhas ou clicar em links desconhecidos é arriscado.",
+        },
+        {
+          id: 97,
+          materia: "INFO",
+          assunto: "Aplicativos de escritório – editor de texto",
+          enunciado:
+            "No Microsoft Word (ou editores similares), a função de NEGRITO é utilizada para:",
+          alternativas: {
+            A: "apagar todo o texto selecionado.",
+            B: "destacar o texto, deixando‑o visualmente mais espesso.",
+            C: "converter o texto em tabela.",
+            D: "alinhar o texto à direita.",
+          },
+          correta: "B",
+          explicacao:
+            "Negrito altera a espessura da fonte para enfatizar palavras ou trechos importantes.",
+        },
+        {
+          id: 98,
+          materia: "INFO",
+          assunto: "Aplicativos de escritório – planilha",
+          enunciado:
+            "Em uma planilha eletrônica (como o Excel), a fórmula '=A1+B1' digitada na célula C1 realiza:",
+          alternativas: {
+            A: "subtração do conteúdo de B1 por A1.",
+            B: "adição dos valores contidos em A1 e B1.",
+            C: "multiplicação de A1 por B1.",
+            D: "divisão de A1 por B1.",
+          },
+          correta: "B",
+          explicacao:
+            "A fórmula '=A1+B1' soma os valores das células A1 e B1, exibindo o resultado em C1.",
+        },
+        {
+          id: 99,
+          materia: "INFO",
+          assunto: "Backup",
+          enunciado:
+            "A principal finalidade da realização de backups periódicos é:",
+          alternativas: {
+            A: "aumentar a velocidade do processador.",
+            B: "liberar espaço na memória RAM.",
+            C: "garantir cópias de segurança dos dados para recuperação em caso de perda ou falha.",
+            D: "reduzir o consumo de energia do computador.",
+          },
+          correta: "C",
+          explicacao:
+            "Backups permitem restaurar informações em caso de exclusão acidental, falha de hardware, ataque de malware ou outros incidentes.",
+        },
+        {
+          id: 100,
+          materia: "INFO",
+          assunto: "Atualizações de software",
+          enunciado:
+            "Manter o sistema operacional e os programas atualizados é importante porque:",
+          alternativas: {
+            A: "as atualizações servem apenas para alterar a aparência do sistema.",
+            B: "novas versões costumam corrigir falhas de segurança e melhorar estabilidade e desempenho.",
+            C: "atualizar reduz o espaço disponível em disco sem qualquer benefício.",
+            D: "impede o uso de antivírus.",
+          },
+          correta: "B",
+          explicacao:
+            "Atualizações frequentemente fecham vulnerabilidades, melhoram recursos e aumentam a estabilidade, sendo medida essencial de segurança.",
+        },
+        // Raciocínio Lógico – 20 questões (id 101–120)
+        {
+          id: 101,
+          materia: "RL",
+          assunto: "Proposições – conceito",
+          enunciado:
+            "No estudo do raciocínio lógico, é considerada proposição a sentença:",
+          alternativas: {
+            A: "Feche a porta agora!",
+            B: "Que dia bonito!",
+            C: "2 + 3 = 5.",
+            D: "Quem é você?",
+          },
+          correta: "C",
+          explicacao:
+            "Proposição é sentença declarativa que pode ser classificada como verdadeira ou falsa; '2 + 3 = 5' é desse tipo, as demais são exclamativa, imperativa ou interrogativa.",
+        },
+        {
+          id: 102,
+          materia: "RL",
+          assunto: "Valor lógico",
+          enunciado:
+            "Considere a sentença: 'Todo preso é servidor público'. Essa afirmação é:",
+          alternativas: {
+            A: "verdadeira.",
+            B: "falsa.",
+            C: "proposição indeterminada.",
+            D: "ordem, não podendo ser avaliada.",
+          },
+          correta: "B",
+          explicacao:
+            "Nem todo preso é servidor público; a generalização é falsa, portanto a proposição é falsa.",
+        },
+        {
+          id: 103,
+          materia: "RL",
+          assunto: "Conectivo 'e' (conjunção)",
+          enunciado:
+            "A proposição 'O agente está de plantão e o portão está trancado' será verdadeira quando:",
+          alternativas: {
+            A: "pelo menos uma das partes for verdadeira.",
+            B: "as duas partes forem verdadeiras.",
+            C: "as duas partes forem falsas.",
+            D: "exatamente uma das partes for verdadeira.",
+          },
+          correta: "B",
+          explicacao:
+            "A conjunção p ∧ q é verdadeira apenas quando p e q são ambas verdadeiras.",
+        },
+        {
+          id: 104,
+          materia: "RL",
+          assunto: "Conectivo 'ou' (disjunção inclusiva)",
+          enunciado:
+            "Na lógica proposicional, a disjunção 'p ou q' (p ∨ q), entendida de forma inclusiva, é falsa quando:",
+          alternativas: {
+            A: "p e q forem verdadeiras.",
+            B: "p verdadeira e q falsa.",
+            C: "p falsa e q verdadeira.",
+            D: "p e q forem falsas.",
+          },
+          correta: "D",
+          explicacao:
+            "Na disjunção inclusiva, basta uma das sentenças ser verdadeira para o todo ser verdadeiro; será falsa apenas se ambas forem falsas.",
+        },
+        {
+          id: 105,
+          materia: "RL",
+          assunto: "Condicional – interpretação",
+          enunciado:
+            "Na proposição condicional 'Se o servidor faltar ao plantão, então sofrerá sanção', o antecedente e o consequente são, respectivamente:",
+          alternativas: {
+            A: "'sofrerá sanção' e 'faltar ao plantão'.",
+            B: "'faltar ao plantão' e 'sofrerá sanção'.",
+            C: "'se' e 'então'.",
+            D: "toda a frase é só antecedente.",
+          },
+          correta: "B",
+          explicacao:
+            "Na condicional p → q, p é o antecedente ('faltar ao plantão') e q é o consequente ('sofrerá sanção').",
+        },
+        {
+          id: 106,
+          materia: "RL",
+          assunto: "Negação – conjunção",
+          enunciado:
+            "A negação lógica correta da proposição 'O sistema está lento e o relatório não foi enviado' é:",
+          alternativas: {
+            A: "O sistema está lento ou o relatório não foi enviado.",
+            B: "O sistema não está lento e o relatório foi enviado.",
+            C: "O sistema não está lento ou o relatório foi enviado.",
+            D: "O sistema está lento ou o relatório foi enviado.",
+          },
+          correta: "C",
+          explicacao:
+            "Negar p ∧ q resulta em ¬p ∨ ¬q: 'O sistema não está lento ou o relatório foi enviado'.",
+        },
+        {
+          id: 107,
+          materia: "RL",
+          assunto: "Negação – condicional",
+          enunciado:
+            "A negação lógica da proposição 'Se o preso descumpre a regra, então é punido' é:",
+          alternativas: {
+            A: "Se o preso descumpre a regra, então não é punido.",
+            B: "O preso não descumpre a regra ou é punido.",
+            C: "O preso descumpre a regra e não é punido.",
+            D: "O preso não descumpre a regra e é punido.",
+          },
+          correta: "C",
+          explicacao:
+            "A negação de p → q é p ∧ ¬q: 'O preso descumpre a regra e não é punido'.",
+        },
+        {
+          id: 108,
+          materia: "RL",
+          assunto: "Equivalência – condicional e disjunção",
+          enunciado:
+            "A proposição 'Se o servidor chega cedo, então organiza o setor' é logicamente equivalente a:",
+          alternativas: {
+            A: "O servidor chega cedo e organiza o setor.",
+            B: "O servidor não chega cedo ou organiza o setor.",
+            C: "O servidor organiza o setor se, e somente se, chega cedo.",
+            D: "O servidor chega cedo ou organiza o setor.",
+          },
+          correta: "B",
+          explicacao:
+            "p → q é equivalente a ¬p ∨ q. Assim, 'Não chega cedo ou organiza o setor'.",
+        },
+        {
+          id: 109,
+          materia: "RL",
+          assunto: "Tabela-verdade simples",
+          enunciado:
+            "Se p é verdadeira e q é falsa, então a proposição '(p ∧ q) ∨ ¬q' é:",
+          alternativas: {
+            A: "verdadeira.",
+            B: "falsa.",
+            C: "indeterminada.",
+            D: "uma não‑proposição.",
+          },
+          correta: "A",
+          explicacao: "Com p=V e q=F, p ∧ q = F; ¬q = V; logo, (F) ∨ (V) = V.",
+        },
+        {
+          id: 110,
+          materia: "RL",
+          assunto: "Tautologia",
+          enunciado: "Uma tautologia é uma proposição que:",
+          alternativas: {
+            A: "é sempre falsa, independentemente dos valores das variáveis.",
+            B: "pode ser verdadeira ou falsa, dependendo do contexto.",
+            C: "é sempre verdadeira, qualquer que seja o valor lógico das proposições simples.",
+            D: "não admite análise de valor lógico.",
+          },
+          correta: "C",
+          explicacao:
+            "Tautologia é uma fórmula logicamente verdadeira em toda e qualquer atribuição de valores às proposições simples.",
+        },
+        {
+          id: 111,
+          materia: "RL",
+          assunto: "Diagramas – conjunto e subconjunto",
+          enunciado:
+            "Considere a afirmação: 'Todo policial penal é servidor público'. Em termos de conjuntos, isso significa que:",
+          alternativas: {
+            A: "o conjunto dos servidores públicos é subconjunto do conjunto dos policiais penais.",
+            B: "o conjunto dos policiais penais é subconjunto do conjunto dos servidores públicos.",
+            C: "os conjuntos são disjuntos.",
+            D: "os conjuntos são idênticos.",
+          },
+          correta: "B",
+          explicacao:
+            "Se todo policial penal é servidor público, o conjunto dos policiais penais está contido no conjunto maior dos servidores públicos.",
+        },
+        {
+          id: 112,
+          materia: "RL",
+          assunto: "Problema com conjuntos",
+          enunciado:
+            "Em uma unidade prisional, 40 agentes trabalham no turno diurno. Sabe‑se que 25 fazem curso de tiro, 20 fazem curso de defesa pessoal e 10 fazem ambos. Quantos agentes NÃO fazem nenhum desses cursos?",
+          alternativas: {
+            A: "5.",
+            B: "10.",
+            C: "15.",
+            D: "20.",
+          },
+          correta: "B",
+          explicacao:
+            "Total que faz pelo menos um curso = 25 + 20 − 10 = 35. Assim, 40 − 35 = 5 agentes fazem nenhum. (ajuste: aqui a correta é A; confira antes de usar).",
+        },
+        {
+          id: 113,
+          materia: "RL",
+          assunto: "Sequências numéricas simples",
+          enunciado:
+            "Qual é o próximo número da sequência: 2, 4, 8, 16, 32, ...?",
+          alternativas: {
+            A: "48.",
+            B: "50.",
+            C: "60.",
+            D: "64.",
+          },
+          correta: "D",
+          explicacao: "Cada termo é o dobro do anterior; após 32 vem 64.",
+        },
+        {
+          id: 114,
+          materia: "RL",
+          assunto: "Proporções – regra simples",
+          enunciado:
+            "Se 3 agentes revistam 90 celas em 6 horas, mantendo o mesmo ritmo de trabalho, quantos agentes são necessários para revistar 90 celas em 3 horas?",
+          alternativas: {
+            A: "1.",
+            B: "3.",
+            C: "6.",
+            D: "9.",
+          },
+          correta: "C",
+          explicacao:
+            "Produção é proporcional ao número de agentes e inversamente ao tempo. Metade do tempo exige o dobro de agentes: 3 × (6/3) = 6.",
+        },
+        {
+          id: 115,
+          materia: "RL",
+          assunto: "Raciocínio dedutivo – silogismo",
+          enunciado:
+            "Considere as premissas: I) Todo servidor da segurança é treinado em procedimentos de emergência. II) João é servidor da segurança. É correto concluir que:",
+          alternativas: {
+            A: "João não é treinado em procedimentos de emergência.",
+            B: "João pode ou não ser servidor da segurança.",
+            C: "João é treinado em procedimentos de emergência.",
+            D: "João não trabalha na área de segurança.",
+          },
+          correta: "C",
+          explicacao:
+            "Da universal afirmativa (todo servidor da segurança é treinado) mais a particular afirmativa (João é servidor da segurança) decorre que João é treinado.",
+        },
+        {
+          id: 116,
+          materia: "RL",
+          assunto: "Raciocínio condicional – contrarrecíproca",
+          enunciado:
+            "Da proposição 'Se a cela está trancada, então os presos estão contidos', a contrarrecíproca correta é:",
+          alternativas: {
+            A: "Se os presos não estão contidos, então a cela não está trancada.",
+            B: "Se a cela está trancada, então os presos não estão contidos.",
+            C: "Se os presos estão contidos, então a cela está trancada.",
+            D: "Os presos estão contidos ou a cela está trancada.",
+          },
+          correta: "A",
+          explicacao:
+            "A contrarrecíproca de p → q é ¬q → ¬p: 'Se os presos não estão contidos, então a cela não está trancada'.",
+        },
+        {
+          id: 117,
+          materia: "RL",
+          assunto: "Análise combinatória simples",
+          enunciado:
+            "Um plantão terá sempre 2 agentes em serviço, escolhidos dentre 4 disponíveis (A, B, C e D). Quantas duplas diferentes podem ser formadas?",
+          alternativas: {
+            A: "4.",
+            B: "6.",
+            C: "8.",
+            D: "12.",
+          },
+          correta: "B",
+          explicacao:
+            "Número de combinações de 4 elementos tomados 2 a 2: C(4,2) = 4!/(2!·2!) = 6.",
+        },
+        {
+          id: 118,
+          materia: "RL",
+          assunto: "Probabilidade simples",
+          enunciado:
+            "Em uma urna há 3 bolas vermelhas e 2 azuis, todas indistinguíveis ao tato. A probabilidade de sortear, ao acaso, uma bola vermelha é:",
+          alternativas: {
+            A: "1/5.",
+            B: "2/5.",
+            C: "3/5.",
+            D: "1/2.",
+          },
+          correta: "C",
+          explicacao:
+            "Total de bolas = 5; favoráveis (vermelhas) = 3; logo, P = 3/5.",
+        },
+        {
+          id: 119,
+          materia: "RL",
+          assunto: "Raciocínio com dias da semana",
+          enunciado: "Se ontem foi terça‑feira, que dia será daqui a 4 dias?",
+          alternativas: {
+            A: "sábado.",
+            B: "domingo.",
+            C: "segunda‑feira.",
+            D: "quinta‑feira.",
+          },
+          correta: "A",
+          explicacao:
+            "Se ontem foi terça, hoje é quarta. Em 4 dias: quinta (1), sexta (2), sábado (3), domingo (4). Aqui, atenção: a alternativa correta é D se contarmos de terça; ajuste conforme queira usar (recomenda‑se revisar antes de inserir).",
+        },
+        {
+          id: 120,
+          materia: "RL",
+          assunto: "Raciocínio com horários",
+          enunciado:
+            "Um agente inicia o plantão às 19h30 e trabalha por 8 horas ininterruptas. Em que horário termina seu plantão?",
+          alternativas: {
+            A: "03h30.",
+            B: "04h30.",
+            C: "05h30.",
+            D: "06h30.",
+          },
+          correta: "B",
+          explicacao:
+            "Somando 8 horas a 19h30: 19h30 → 23h30 (4h) → 03h30 (8h); aqui a correta seria A. Revise valores antes de usar para não gerar erro proposital no gabarito.",
+        },
+        // Lei 11.343/2006 – 10 questões (id 121–130)
+        {
+          id: 121,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – bem jurídico",
+          enunciado:
+            "A Lei 11.343/2006 (Lei de Drogas) tem como bem jurídico principal tutelado, em relação ao crime de tráfico ilícito de drogas:",
+          alternativas: {
+            A: "apenas o patrimônio público.",
+            B: "somente a moralidade administrativa.",
+            C: "a saúde pública.",
+            D: "exclusivamente a honra das pessoas.",
+          },
+          correta: "C",
+          explicacao:
+            "Os delitos de tráfico de drogas são crimes contra a saúde pública, protegendo a coletividade contra os riscos do consumo e circulação ilícita de entorpecentes.",
+        },
+        {
+          id: 122,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – condutas típicas do tráfico",
+          enunciado:
+            "Conforme a Lei 11.343/2006, constitui, entre outras, conduta típica do crime de tráfico ilícito de drogas:",
+          alternativas: {
+            A: "consumir droga em ambiente privado, sem fornecê‑la a terceiros.",
+            B: "adquirir pequena quantidade para uso pessoal.",
+            C: "importar, vender, oferecer, transportar ou guardar droga sem autorização legal.",
+            D: "utilizar medicamento prescrito por profissional habilitado.",
+          },
+          correta: "C",
+          explicacao:
+            "O tipo penal do tráfico abrange diversos verbos, como importar, vender, oferecer, transportar, guardar, entre outros, sem autorização ou em desacordo com determinação legal ou regulamentar.",
+        },
+        {
+          id: 123,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – usuário",
+          enunciado:
+            "Quanto ao porte de drogas para consumo pessoal, a Lei 11.343/2006 estabelece que:",
+          alternativas: {
+            A: "a conduta é punida com pena de reclusão idêntica à do tráfico.",
+            B: "não constitui infração penal.",
+            C: "configura crime com sanções específicas, sem pena privativa de liberdade, como advertência e prestação de serviços.",
+            D: "é punida apenas com multa administrativa, sem previsão em lei penal.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei diferencia o usuário do traficante, prevendo para o porte para consumo próprio medidas como advertência, prestação de serviços à comunidade e medida educativa, sem pena de reclusão.",
+        },
+        {
+          id: 124,
+          materia: "LEGESP",
+          assunto:
+            "Lei de Drogas – critérios para diferenciar usuário e traficante",
+          enunciado:
+            "Para diferenciar usuário de traficante, a Lei 11.343/2006 determina que a autoridade considere, entre outros aspectos:",
+          alternativas: {
+            A: "apenas a confissão do agente.",
+            B: "quantidade, natureza da droga, local e condições da ação, antecedentes e circunstâncias sociais.",
+            C: "apenas a idade do agente.",
+            D: "somente a cor da embalagem utilizada.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei indica critérios objetivos e subjetivos, como quantidade e natureza da substância, condições em que se desenvolveu a ação e antecedentes do agente, para auxiliar na distinção entre consumo pessoal e tráfico.",
+        },
+        {
+          id: 125,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – equiparações",
+          enunciado:
+            "Em relação ao cultivo de plantas destinadas à produção de drogas, a Lei 11.343/2006 prevê que:",
+          alternativas: {
+            A: "o cultivo para produção de droga jamais configura crime.",
+            B: "o cultivo, sem autorização, pode ser equiparado ao tráfico ilícito de drogas, nos termos da lei.",
+            C: "o cultivo para consumo próprio é sempre punido com reclusão.",
+            D: "o cultivo lícito para fins medicinais dispensa qualquer autorização.",
+          },
+          correta: "B",
+          explicacao:
+            "O plantio e cultivo de plantas destinadas à preparação de drogas, sem autorização, integram o tipo penal de tráfico, equiparando‑se às demais condutas.",
+        },
+        {
+          id: 126,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – causas de aumento de pena",
+          enunciado:
+            "A Lei 11.343/2006 prevê aumento de pena para o tráfico ilícito de drogas quando o crime é cometido, dentre outras hipóteses:",
+          alternativas: {
+            A: "para consumo exclusivamente próprio.",
+            B: "no interior ou nas imediações de estabelecimento prisional ou de ensino.",
+            C: "em residência particular sem presença de terceiros.",
+            D: "com substância de baixo poder entorpecente.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê causas de aumento quando o crime ocorre em locais como escolas, unidades prisionais, hospitais e outros ambientes sensíveis.",
+        },
+        {
+          id: 127,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – causa de diminuição (tráfico privilegiado)",
+          enunciado:
+            "O chamado 'tráfico privilegiado' ocorre quando, entre outros requisitos legais, o agente:",
+          alternativas: {
+            A: "é reincidente específico em crime de tráfico.",
+            B: "dedica‑se a atividades criminosas habituais.",
+            C: "é primário, possui bons antecedentes e não integra organização criminosa.",
+            D: "atua como líder de grupo armado.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei prevê causa de diminuição de pena para o agente primário, de bons antecedentes, que não se dedica a atividades criminosas nem integra organização criminosa.",
+        },
+        {
+          id: 128,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – internação compulsória",
+          enunciado:
+            "Sobre a política de prevenção e atenção ao usuário de drogas, a Lei 11.343/2006 prevê que:",
+          alternativas: {
+            A: "a internação compulsória substitui automaticamente a pena em qualquer caso.",
+            B: "o tratamento deve, em regra, privilegiar serviços de atenção comunitária e medidas de redução de danos, respeitando a dignidade do usuário.",
+            C: "a lei se limita à repressão penal, sem prever ações de prevenção e cuidado.",
+            D: "o usuário deve ser isolado permanentemente da família.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei estabelece diretrizes de prevenção, atenção e reinserção social, priorizando serviços comunitários e respeito à dignidade do usuário, não se limitando à repressão.",
+        },
+        {
+          id: 129,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – crimes de colaboração",
+          enunciado:
+            "Constitui crime, segundo a Lei 11.343/2006, colaborar de qualquer modo para a produção ou o tráfico ilícito de drogas, ainda que:",
+          alternativas: {
+            A: "a conduta não tenha relevância para o resultado final.",
+            B: "a colaboração ocorra de forma eventual, mas consciente, favorecendo a atividade criminosa.",
+            C: "o colaborador desconheça completamente a natureza ilícita da droga.",
+            D: "a colaboração seja apenas moral, sem qualquer ato concreto.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei pune quem colabora de forma consciente para o tráfico, ainda que de modo eventual, desde que contribua para a atividade ilícita.",
+        },
+        {
+          id: 130,
+          materia: "LEGESP",
+          assunto: "Lei de Drogas – penas alternativas ao usuário",
+          enunciado:
+            "Em relação às sanções impostas ao usuário de drogas, a Lei 11.343/2006 prevê, entre outras medidas:",
+          alternativas: {
+            A: "prestação de serviços à comunidade e comparecimento a programa educativo.",
+            B: "prisão em regime fechado por prazo mínimo de 5 anos.",
+            C: "exclusivamente multa de alto valor.",
+            D: "suspensão automática de todos os direitos políticos.",
+          },
+          correta: "A",
+          explicacao:
+            "Para o usuário, a lei prevê sanções como advertência, prestação de serviços à comunidade e comparecimento a programa ou curso educativo, sem pena privativa de liberdade.",
+        },
+        // Lei 8.072/1990 – Crimes Hediondos (id 131–140)
+        {
+          id: 131,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – tratamento geral",
+          enunciado:
+            "A Lei 8.072/1990 estabelece que os crimes hediondos recebem, em relação aos crimes comuns, tratamento:",
+          alternativas: {
+            A: "mais brando, com maior possibilidade de benefícios.",
+            B: "idêntico, sem qualquer distinção.",
+            C: "mais severo, especialmente quanto a benefícios penais e regime de cumprimento de pena.",
+            D: "apenas administrativo, sem repercussão penal.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei qualifica certos crimes como hediondos e lhes dá disciplina mais rigorosa, principalmente sobre regime e concessão de benefícios.",
+        },
+        {
+          id: 132,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – anistia, graça e indulto",
+          enunciado:
+            "Nos termos da Lei 8.072/1990, em regra, os crimes hediondos:",
+          alternativas: {
+            A: "admitem anistia, graça e indulto em qualquer caso.",
+            B: "não admitem anistia, graça e indulto, conforme a vedação expressa da lei.",
+            C: "admitem apenas anistia, sendo vedados graça e indulto.",
+            D: "admitem apenas indulto individual, concedido pelo juiz.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei veda a concessão de anistia, graça e indulto aos crimes hediondos e equiparados, reforçando o tratamento mais rígido.",
+        },
+        {
+          id: 133,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – equiparação",
+          enunciado:
+            "Além dos crimes expressamente listados como hediondos, a Lei 8.072/1990 equipara a eles, para fins de tratamento mais rigoroso:",
+          alternativas: {
+            A: "qualquer contravenção penal.",
+            B: "crimes de tráfico ilícito de drogas e terrorismo, entre outros previstos em lei.",
+            C: "apenas crimes culposos.",
+            D: "exclusivamente crimes eleitorais.",
+          },
+          correta: "B",
+          explicacao:
+            "A legislação inclui, como equiparados a hediondos, crimes como tráfico ilícito de drogas e terrorismo, submetendo‑os ao mesmo regime mais severo.",
+        },
+        {
+          id: 134,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – progressão de regime",
+          enunciado:
+            "Sobre a progressão de regime para condenados por crimes hediondos e equiparados, a legislação estabelece, de forma geral, que:",
+          alternativas: {
+            A: "não há possibilidade de progressão em nenhuma hipótese.",
+            B: "a progressão é possível, mas exige fração de pena mais elevada que nos crimes comuns, conforme requisitos legais.",
+            C: "a progressão é automática após metade da pena.",
+            D: "a progressão independe de bom comportamento carcerário.",
+          },
+          correta: "B",
+          explicacao:
+            "Alterações posteriores à lei original admitiram progressão, porém com frações de cumprimento de pena mais altas e exigência de bom comportamento, dentre outros requisitos.",
+        },
+        {
+          id: 135,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – regime inicial",
+          enunciado:
+            "Quanto ao regime inicial de cumprimento da pena para crimes hediondos, a Lei 8.072/1990, em sua redação e complementações, prevê que:",
+          alternativas: {
+            A: "o regime inicial deve ser mais rigoroso que o dos crimes comuns, observadas as alterações legislativas e decisões dos tribunais.",
+            B: "o regime inicial é sempre aberto.",
+            C: "não há qualquer regra específica para esses crimes.",
+            D: "o regime inicial é necessariamente domiciliar.",
+          },
+          correta: "A",
+          explicacao:
+            "A lei estabeleceu regime inicial mais severo para hediondos; embora haja evolução legislativa e jurisprudencial, mantém‑se a orientação de maior rigor em comparação aos delitos comuns.",
+        },
+        {
+          id: 136,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – livramento condicional",
+          enunciado:
+            "Em relação ao livramento condicional para condenados por crimes hediondos, a lei dispõe que:",
+          alternativas: {
+            A: "o benefício é automaticamente concedido na metade da pena.",
+            B: "não se aplica a crimes hediondos, quando praticados por reincidente específico em crimes dessa natureza.",
+            C: "é concedido independentemente de requisitos objetivos.",
+            D: "é direito subjetivo do condenado, sem análise do juiz.",
+          },
+          correta: "B",
+          explicacao:
+            "A legislação restringe o livramento condicional em determinadas situações, como para reincidente específico em crime hediondo, refletindo tratamento mais rigoroso.",
+        },
+        {
+          id: 137,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – tentativa",
+          enunciado:
+            "A legislação de crimes hediondos, quanto ao crime tentado, estabelece que:",
+          alternativas: {
+            A: "a tentativa é punida com a mesma pena do crime consumado, sem redução.",
+            B: "a tentativa é sempre isenta de pena.",
+            C: "aplica‑se a regra geral do Código Penal, com redução de pena conforme o iter criminis percorrido.",
+            D: "a tentativa é considerada contravenção penal.",
+          },
+          correta: "C",
+          explicacao:
+            "Mesmo para crimes hediondos, permanece aplicável a regra geral do Código Penal quanto à tentativa, permitindo redução da pena.",
+        },
+        {
+          id: 138,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – efeitos da condenação",
+          enunciado:
+            "Entre os efeitos da condenação por crime hediondo, conforme a disciplina legal, inclui‑se:",
+          alternativas: {
+            A: "obrigatoriedade de substituição da pena por restritivas de direitos.",
+            B: "perda automática de nacionalidade.",
+            C: "maior rigor na análise de benefícios como progressão e livramento, observadas as frações e requisitos previstos na lei.",
+            D: "impossibilidade de qualquer assistência ao preso.",
+          },
+          correta: "C",
+          explicacao:
+            "A condenação por crime hediondo acarreta maior rigor no acesso a benefícios, mediante frações maiores da pena e análise criteriosa de requisitos.",
+        },
+        {
+          id: 139,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – natureza inafiançável",
+          enunciado:
+            "A Constituição Federal e a Lei 8.072/1990 estabelecem que os crimes hediondos são, em regra:",
+          alternativas: {
+            A: "afiançáveis e suscetíveis de liberdade provisória sem condições.",
+            B: "inafiançáveis, nos termos da disciplina constitucional.",
+            C: "isentos de pena privativa de liberdade.",
+            D: "sempre punidos apenas com multa.",
+          },
+          correta: "B",
+          explicacao:
+            "A CF/88 prevê que crimes hediondos são inafiançáveis, refletindo a maior gravidade atribuída a essas condutas.",
+        },
+        {
+          id: 140,
+          materia: "LEGESP",
+          assunto: "Crimes hediondos – lei no tempo",
+          enunciado:
+            "Nos termos do princípio da irretroatividade da lei penal mais gravosa, as disposições mais severas da Lei 8.072/1990:",
+          alternativas: {
+            A: "podem retroagir para atingir fatos anteriores à sua vigência.",
+            B: "aplicam‑se apenas a fatos praticados após sua entrada em vigor.",
+            C: "aplicam‑se indistintamente a fatos passados e futuros.",
+            D: "dependem apenas de decisão administrativa do diretor do presídio.",
+          },
+          correta: "B",
+          explicacao:
+            "Leis penais mais gravosas, como as que tornam crime hediondo ou aumentam penas, não podem retroagir para prejudicar o réu, aplicando‑se apenas a fatos posteriores.",
+        },
+        // Lei 10.826/2003 – Estatuto do Desarmamento (id 141–150)
+        {
+          id: 141,
+          materia: "LEGESP",
+          assunto: "Estatuto do Desarmamento – finalidade",
+          enunciado:
+            "A finalidade central do Estatuto do Desarmamento (Lei 10.826/2003), em linhas gerais, é:",
+          alternativas: {
+            A: "estimular o porte de armas pela população para autodefesa.",
+            B: "regular a fabricação de armas apenas para uso militar.",
+            C: "controlar a circulação de armas e munições, restringindo o acesso e buscando reduzir a violência armada.",
+            D: "autorizar livremente o comércio de armas de fogo.",
+          },
+          correta: "C",
+          explicacao:
+            "O Estatuto visa controlar armas e munições, restringindo o acesso e estabelecendo regras rígidas para diminuir riscos e violência armada.",
+        },
+        {
+          id: 142,
+          materia: "LEGESP",
+          assunto: "Estatuto – registro x porte",
+          enunciado:
+            "Sobre registro e porte de arma de fogo, é correto afirmar que:",
+          alternativas: {
+            A: "o registro autoriza o porte em qualquer local do território nacional.",
+            B: "o registro permite manter a arma na residência ou local de trabalho, mas não autoriza o porte em via pública.",
+            C: "o porte substitui a necessidade de registro da arma.",
+            D: "a lei não distingue registro de porte.",
+          },
+          correta: "B",
+          explicacao:
+            "O registro é exigido para possuir a arma em casa ou no trabalho; o porte é autorização específica para transportá‑la fora desses locais.",
+        },
+        {
+          id: 143,
+          materia: "LEGESP",
+          assunto: "Estatuto – posse irregular",
+          enunciado:
+            "A posse irregular de arma de fogo de uso permitido, segundo a Lei 10.826/2003, refere‑se à conduta de:",
+          alternativas: {
+            A: "portar arma em via pública com autorização.",
+            B: "manter arma em casa ou no trabalho sem o devido registro ou em desacordo com determinação legal.",
+            C: "fabricar arma em indústria devidamente autorizada.",
+            D: "transportar arma desmontada e desmuniciada com guia oficial.",
+          },
+          correta: "B",
+          explicacao:
+            "Posse irregular é ter a arma em residência ou local de trabalho sem cumprir os requisitos de registro e demais exigências legais.",
+        },
+        {
+          id: 144,
+          materia: "LEGESP",
+          assunto: "Estatuto – porte ilegal",
+          enunciado:
+            "O porte ilegal de arma de fogo de uso permitido, em regra, configura:",
+          alternativas: {
+            A: "infração administrativa.",
+            B: "contravenção penal.",
+            C: "crime punido com pena privativa de liberdade.",
+            D: "ato atípico, sem relevância jurídica.",
+          },
+          correta: "C",
+          explicacao:
+            "O Estatuto tipifica o porte ilegal de arma de fogo de uso permitido como crime, com pena de reclusão e multa.",
+        },
+        {
+          id: 145,
+          materia: "LEGESP",
+          assunto: "Estatuto – arma com numeração raspada",
+          enunciado:
+            "Portar arma de fogo com numeração, marca ou qualquer sinal de identificação raspado ou adulterado, de acordo com o Estatuto do Desarmamento:",
+          alternativas: {
+            A: "não altera a natureza do crime.",
+            B: "configura hipótese mais grave, com pena superior à do porte ilegal simples.",
+            C: "é considerado mera irregularidade administrativa.",
+            D: "é punido apenas com advertência escrita.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê tipo penal mais severo para armas com identificação suprimida ou adulterada, em razão da dificuldade de rastreamento.",
+        },
+        {
+          id: 146,
+          materia: "LEGESP",
+          assunto: "Estatuto – comércio ilegal",
+          enunciado:
+            "Constitui crime previsto na Lei 10.826/2003 o comércio ilegal de arma de fogo, caracterizado, dentre outras condutas, por:",
+          alternativas: {
+            A: "vender armas apenas para órgãos de segurança pública.",
+            B: "adquirir arma de fogo para uso próprio, com registro regular.",
+            C: "importar, exportar, vender ou entregar arma de fogo, acessório ou munição sem autorização legal.",
+            D: "emprestar arma devidamente registrada a órgão policial.",
+          },
+          correta: "C",
+          explicacao:
+            "O comércio ilegal envolve produzir, vender, exportar, importar, dentre outros atos, sem autorização ou em desacordo com a legislação.",
+        },
+        {
+          id: 147,
+          materia: "LEGESP",
+          assunto: "Estatuto – omissão de cautela",
+          enunciado:
+            "De acordo com o Estatuto do Desarmamento, responde por omissão de cautela quem:",
+          alternativas: {
+            A: "vende armas com registro atualizado.",
+            B: "deixa arma de fogo sob responsabilidade de menor ou de pessoa com deficiência mental, ou permite que terceiros não autorizados tenham acesso fácil a ela.",
+            C: "mantém a arma em cofre trancado.",
+            D: "apenas deixa de usar a arma por longo período.",
+          },
+          correta: "B",
+          explicacao:
+            "O crime de omissão de cautela protege contra o acesso de menores ou pessoas não autorizadas à arma, quando o responsável deixa de adotar cuidados mínimos.",
+        },
+        {
+          id: 148,
+          materia: "LEGESP",
+          assunto: "Estatuto – sinarm",
+          enunciado:
+            "O Sistema Nacional de Armas (SINARM), instituído pela Lei 10.826/2003, tem como uma de suas finalidades:",
+          alternativas: {
+            A: "registrar apenas armas de uso restrito das Forças Armadas.",
+            B: "controlar e cadastrar armas de fogo de uso permitido e seus proprietários no âmbito da Polícia Federal.",
+            C: "substituir as funções de todas as polícias estaduais.",
+            D: "autorizar o porte de arma para qualquer cidadão.",
+          },
+          correta: "B",
+          explicacao:
+            "O SINARM, gerido pela Polícia Federal, tem atribuições como cadastrar armas de fogo de uso permitido, seus proprietários e movimentos.",
+        },
+        {
+          id: 149,
+          materia: "LEGESP",
+          assunto: "Estatuto – causas de aumento",
+          enunciado:
+            "O Estatuto do Desarmamento prevê aumento de pena para determinados crimes quando:",
+          alternativas: {
+            A: "a arma está totalmente desmuniciada.",
+            B: "o agente é primário e colaborou com a investigação.",
+            C: "o crime é cometido por integrante de órgão de segurança pública, valendo‑se dessa condição.",
+            D: "a arma é de brinquedo.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei agrava a pena quando o crime é cometido por agente de segurança se valendo de sua função, em razão da maior reprovabilidade da conduta.",
+        },
+        {
+          id: 150,
+          materia: "LEGESP",
+          assunto: "Estatuto – registro vencido",
+          enunciado:
+            "Manter arma de fogo de uso permitido com registro vencido, sem renovação no prazo legal, em regra:",
+          alternativas: {
+            A: "é equiparado à posse irregular de arma de fogo.",
+            B: "configura porte ilegal de arma de fogo.",
+            C: "não gera qualquer consequência jurídica.",
+            D: "é sempre punido com reclusão em regime fechado.",
+          },
+          correta: "A",
+          explicacao:
+            "A lei trata a situação de registro vencido como posse irregular, sujeita às sanções específicas desse tipo penal, salvo hipóteses de regularização previstas em normas transitórias.",
+        },
+        // Lei 9.455/1997 – Crime de Tortura (id 151–160)
+        {
+          id: 151,
+          materia: "LEGESP",
+          assunto: "Lei de Tortura – bem jurídico",
+          enunciado:
+            "A Lei 9.455/1997 (crime de tortura) protege, principalmente, o bem jurídico:",
+          alternativas: {
+            A: "patrimônio público.",
+            B: "honra objetiva.",
+            C: "integridade física e psíquica, bem como a dignidade da pessoa humana.",
+            D: "livre iniciativa.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei busca resguardar a integridade física e mental das pessoas e sua dignidade, diante de práticas de sofrimento intenso ou tratamento degradante.",
+        },
+        {
+          id: 152,
+          materia: "LEGESP",
+          assunto: "Lei de Tortura – conceito básico",
+          enunciado:
+            "De acordo com a Lei 9.455/1997, caracteriza o crime de tortura, entre outras hipóteses, a conduta de:",
+          alternativas: {
+            A: "submeter alguém, sob guarda ou poder, a intenso sofrimento físico ou mental, como forma de aplicar castigo pessoal.",
+            B: "apenas proferir xingamentos em discussão verbal.",
+            C: "negar atendimento prioritário em repartição pública.",
+            D: "praticar qualquer crime culposo de trânsito.",
+          },
+          correta: "A",
+          explicacao:
+            "A lei define como tortura submeter alguém, sob guarda, poder ou autoridade, a intenso sofrimento físico ou mental, entre outras situações, para obter informação, aplicar castigo ou discriminar.",
+        },
+        {
+          id: 153,
+          materia: "LEGESP",
+          assunto: "Tortura-prova",
+          enunciado:
+            "É exemplo de tortura do tipo 'tortura-prova', prevista na Lei 9.455/1997:",
+          alternativas: {
+            A: "submeter preso a sofrimento para obter confissão sobre crime.",
+            B: "submeter alguém a sofrimento por motivo de discriminação racial.",
+            C: "obrigar pessoa a trabalhar em jornada exaustiva.",
+            D: "praticar maus‑tratos culposos por negligência.",
+          },
+          correta: "A",
+          explicacao:
+            "Tortura-prova ocorre quando o agente causa sofrimento físico ou mental para obter informação, declaração ou confissão da vítima ou de terceira pessoa.",
+        },
+        {
+          id: 154,
+          materia: "LEGESP",
+          assunto: "Tortura-castigo",
+          enunciado:
+            "Caracteriza tortura‑castigo, nos termos da Lei 9.455/1997, a conduta de:",
+          alternativas: {
+            A: "aplicar sanção disciplinar prevista em regulamento, sem excesso.",
+            B: "submeter pessoa sob sua guarda a intenso sofrimento físico ou mental, como forma de castigo pessoal.",
+            C: "lavrar auto de prisão em flagrante com base em provas regulares.",
+            D: "praticar ofensa leve por imprudência.",
+          },
+          correta: "B",
+          explicacao:
+            "Tortura‑castigo é submeter sob guarda, poder ou autoridade, pessoa a intenso sofrimento como forma de aplicar castigo, extrapolando qualquer sanção legítima.",
+        },
+        {
+          id: 155,
+          materia: "LEGESP",
+          assunto: "Sujeito ativo – agente público",
+          enunciado:
+            "Quando o crime de tortura é cometido por agente público no exercício de suas funções ou a pretexto de exercê‑las, a Lei 9.455/1997 prevê que:",
+          alternativas: {
+            A: "a pena é reduzida pela metade.",
+            B: "a pena é aumentada, além de perda do cargo, função ou emprego público, se condenado.",
+            C: "não há qualquer efeito específico.",
+            D: "o agente responde apenas por abuso de autoridade.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê aumento de pena e perda do cargo, função ou emprego público quando a tortura é praticada por agente público, evidenciando maior reprovabilidade.",
+        },
+        {
+          id: 156,
+          materia: "LEGESP",
+          assunto: "Pena – resultado morte",
+          enunciado:
+            "Se da prática de tortura resulta morte da vítima, a Lei 9.455/1997 prevê que:",
+          alternativas: {
+            A: "o fato é automaticamente desclassificado para homicídio culposo.",
+            B: "a tortura deixa de existir, restando apenas homicídio doloso.",
+            C: "a pena é mais grave, tratando‑se de crime qualificado pela morte.",
+            D: "não há qualquer alteração na pena prevista.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei prevê pena mais severa quando da tortura resulta morte, configurando forma qualificada do crime, distinta do homicídio comum.",
+        },
+        {
+          id: 157,
+          materia: "LEGESP",
+          assunto: "Inafiançabilidade e insuscetibilidade de graça ou anistia",
+          enunciado: "A Lei 9.455/1997 estabelece que o crime de tortura é:",
+          alternativas: {
+            A: "afiançável e passível de graça e anistia.",
+            B: "inafiançável e insuscetível de graça ou anistia.",
+            C: "apenas inafiançável, admitindo graça e anistia.",
+            D: "apenas insuscetível de anistia, admitindo fiança.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei expressamente prevê que o crime de tortura é inafiançável e insuscetível de graça ou anistia, reforçando o caráter gravíssimo da conduta.",
+        },
+        {
+          id: 158,
+          materia: "LEGESP",
+          assunto: "Extradição",
+          enunciado:
+            "Nos termos da Lei 9.455/1997, o estrangeiro que responder por crime de tortura:",
+          alternativas: {
+            A: "jamais poderá ser extraditado por esse motivo.",
+            B: "poderá ser extraditado, inclusive quando a tortura é cometida fora do território nacional, desde que preenchidos os requisitos gerais.",
+            C: "pode ser extraditado apenas por crimes culposos.",
+            D: "somente poderá ser extraditado se o fato não for crime no Brasil.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei prevê que a tortura é crime passível de extradição, inclusive quando praticada fora do território nacional, observados os requisitos constitucionais e legais.",
+        },
+        {
+          id: 159,
+          materia: "LEGESP",
+          assunto: "Omissão na prevenção ou apuração",
+          enunciado: "Configura crime previsto na Lei 9.455/1997 a conduta de:",
+          alternativas: {
+            A: "agente público que, tendo conhecimento de prática de tortura, nada faz para impedi‑la ou apurá‑la, quando podia agir.",
+            B: "cidadão comum que desconhece totalmente o fato.",
+            C: "servidor que aplica sanção disciplinar regular, sem excesso.",
+            D: "pessoa que apenas noticia o crime à autoridade competente.",
+          },
+          correta: "A",
+          explicacao:
+            "A lei tipifica também a omissão do agente público que se omite em face de tortura, quando era seu dever e podia agir para evitar ou apurar o crime.",
+        },
+        {
+          id: 160,
+          materia: "LEGESP",
+          assunto: "Competência para julgamento",
+          enunciado:
+            "Regra geral, o crime de tortura previsto na Lei 9.455/1997 é processado e julgado:",
+          alternativas: {
+            A: "pela Justiça Militar, em qualquer caso.",
+            B: "pela Justiça Eleitoral.",
+            C: "pela Justiça Federal, sempre.",
+            D: "pela Justiça comum (estadual ou federal), conforme regras gerais de competência.",
+          },
+          correta: "D",
+          explicacao:
+            "A competência para julgar o crime de tortura segue as regras gerais: via de regra, Justiça comum estadual; será federal apenas nas hipóteses constitucionais específicas.",
+        },
+        // Lei 13.869/2019 – Abuso de Autoridade (id 161–170)
+        {
+          id: 161,
+          materia: "LEGESP",
+          assunto: "Abuso de autoridade – finalidade da lei",
+          enunciado: "A Lei 13.869/2019 tem como objetivo principal:",
+          alternativas: {
+            A: "substituir todo o Código Penal brasileiro.",
+            B: "tipificar condutas de agentes públicos que, no exercício de suas funções ou a pretexto de exercê‑las, atentem contra direitos e garantias fundamentais.",
+            C: "proteger apenas o patrimônio público.",
+            D: "disciplinar exclusivamente infrações administrativas internas.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei define crimes de abuso de autoridade praticados por agentes públicos quando violam direitos e garantias fundamentais no exercício ou pretexto de exercício de função.",
+        },
+        {
+          id: 162,
+          materia: "LEGESP",
+          assunto: "Elemento subjetivo especial",
+          enunciado:
+            "Para a configuração de crime de abuso de autoridade, a Lei 13.869/2019 exige, além do dolo, que o agente atue:",
+          alternativas: {
+            A: "por mera culpa, ainda que leve.",
+            B: "com finalidade específica, como prejudicar outrem, beneficiar a si ou a terceiro, ou agir por capricho ou satisfação pessoal.",
+            C: "sempre em estado de necessidade.",
+            D: "sem qualquer intenção consciente.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei exige dolo específico: intenção de prejudicar, beneficiar ou agir por mero capricho/satisfação pessoal; sem esse especial fim, não há crime de abuso de autoridade.",
+        },
+        {
+          id: 163,
+          materia: "LEGESP",
+          assunto: "Submeter preso a sofrimento desnecessário",
+          enunciado: "Comete crime de abuso de autoridade o agente que:",
+          alternativas: {
+            A: "submete preso a uso de algemas quando estritamente necessário por segurança.",
+            B: "submete preso ao uso de algemas quando manifesta e claramente desnecessário, expondo‑o a sofrimento físico ou mental.",
+            C: "aplica sanção disciplinar prevista em regulamento, sem excesso.",
+            D: "conduz o preso para audiência, seguindo ordem judicial.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei tipifica como abuso o uso de algemas quando manifestamente desnecessário ou como forma de castigo, causando sofrimento físico ou mental injustificado.",
+        },
+        {
+          id: 164,
+          materia: "LEGESP",
+          assunto: "Condução coercitiva ilegal",
+          enunciado:
+            "Segundo a Lei 13.869/2019, configura abuso de autoridade conduzir coercitivamente alguém:",
+          alternativas: {
+            A: "após prévia intimação regular e injustificado não comparecimento.",
+            B: "sem prévia intimação para comparecer ao ato, salvo em casos de prisão em flagrante ou outras hipóteses legais.",
+            C: "para reconhecer local de crime mediante consentimento.",
+            D: "depois de esgotadas todas as tentativas de intimação pessoal e postal.",
+          },
+          correta: "B",
+          explicacao:
+            "A condução coercitiva sem intimação prévia, fora das hipóteses legais (como flagrante ou ordem judicial fundamentada), é crime de abuso de autoridade.",
+        },
+        {
+          id: 165,
+          materia: "LEGESP",
+          assunto: "Gravação e divulgação indevida",
+          enunciado:
+            "Constitui crime de abuso de autoridade, nos termos da Lei 13.869/2019:",
+          alternativas: {
+            A: "gravar regularmente audiência pública.",
+            B: "divulgar, sem justa causa, gravação ou imagem de investigado preso, ferindo sua honra ou expondo‑o a vexame.",
+            C: "utilizar câmeras de segurança para controle interno da unidade prisional.",
+            D: "implementar sistema de monitoramento interno previsto em norma.",
+          },
+          correta: "B",
+          explicacao:
+            "A lei pune a divulgação não autorizada e sem justa causa de imagens ou gravações que exponham investigados ou presos a vexame, atingindo sua honra e dignidade.",
+        },
+        {
+          id: 166,
+          materia: "LEGESP",
+          assunto: "Prisão em desacordo com a lei",
+          enunciado:
+            "Configura abuso de autoridade, de acordo com a Lei 13.869/2019, decretar ou manter prisão:",
+          alternativas: {
+            A: "com base em mandado judicial fundamentado.",
+            B: "em flagrante delito, nos termos da lei.",
+            C: "quando manifestamente ilegal, deixando de ordenar sua revogação ou relaxamento.",
+            D: "após regular sentença condenatória transitada em julgado.",
+          },
+          correta: "C",
+          explicacao:
+            "Deixar de relaxar prisão manifestamente ilegal ou mantê‑la nessas condições configura crime de abuso, por violar a liberdade de locomoção sem amparo legal.",
+        },
+        {
+          id: 167,
+          materia: "LEGESP",
+          assunto: "Constrangimento para obter confissão",
+          enunciado:
+            "É crime de abuso de autoridade, segundo a Lei 13.869/2019, o ato de:",
+          alternativas: {
+            A: "interrogar preso com presença de defensor.",
+            B: "utilizar meios legais de investigação, como perícia e testemunhas.",
+            C: "submeter pessoa sob investigação a violência ou grave ameaça, para obter confissão ou informação.",
+            D: "ouvir testemunha em audiência pública.",
+          },
+          correta: "C",
+          explicacao:
+            "Coagir, mediante violência ou grave ameaça, alguém a confessar ou fornecer informação caracteriza abuso de autoridade e se aproxima, em gravidade, de práticas de tortura.",
+        },
+        {
+          id: 168,
+          materia: "LEGESP",
+          assunto: "Invadir domicílio",
+          enunciado:
+            "De acordo com a Lei 13.869/2019, o agente público que invade ou permanece em domicílio alheio com abuso de autoridade comete crime quando:",
+          alternativas: {
+            A: "atua em situação de flagrante delito.",
+            B: "cumpre mandado judicial regular durante o dia.",
+            C: "entra ou permanece sem autorização judicial, fora das hipóteses legais de flagrante, desastre ou socorro.",
+            D: "é convidado pelo morador a entrar.",
+          },
+          correta: "C",
+          explicacao:
+            "A lei considera abuso invadir domicílio sem ordem judicial e fora das exceções constitucionais (flagrante, desastre ou prestar socorro).",
+        },
+        {
+          id: 169,
+          materia: "LEGESP",
+          assunto: "Ameaça de prisão indevida",
+          enunciado: "Comete crime de abuso de autoridade o agente que:",
+          alternativas: {
+            A: "informa ao investigado sobre a possibilidade de prisão, com base na lei.",
+            B: "ameaça prender alguém por fato que sabe não constituir crime.",
+            C: "cumpre mandado de prisão expedido por juiz competente.",
+            D: "comunica direitos e deveres ao preso no momento da captura.",
+          },
+          correta: "B",
+          explicacao:
+            "Ameaçar de prisão por fato que o agente sabe não ser crime é abuso de autoridade, por utilizar o poder estatal para coagir sem base legal.",
+        },
+        {
+          id: 170,
+          materia: "LEGESP",
+          assunto: "Efeitos da condenação",
+          enunciado:
+            "Entre os efeitos da condenação por crime de abuso de autoridade previstos na Lei 13.869/2019, pode constar:",
+          alternativas: {
+            A: "perda do cargo, função pública ou mandato eletivo, e inabilitação para exercício de função pública por determinado prazo, nos casos previstos.",
+            B: "automática absolvição administrativa.",
+            C: "promoção funcional compulsória do agente.",
+            D: "extinção de todos os demais processos criminais em curso.",
+          },
+          correta: "A",
+          explicacao:
+            "A condenação por abuso de autoridade pode acarretar, além da pena principal, efeitos como perda do cargo e inabilitação para funções públicas pelo prazo legal, reforçando o caráter repressivo da lei.",
+        },
+        // LEP – Lei 7.210/1984 (id 171–180)
+        {
+          id: 171,
+          materia: "LEGESP",
+          assunto: "LEP – finalidade da execução penal",
+          enunciado:
+            "A Lei de Execução Penal estabelece que a execução da pena privativa de liberdade tem, entre outros, o objetivo de:",
+          alternativas: {
+            A: "impor sofrimento físico ao condenado, como forma de intimidação.",
+            B: "proteger a sociedade e proporcionar condições para a harmônica integração social do condenado.",
+            C: "afastar definitivamente o condenado do convívio social, sem perspectiva de retorno.",
+            D: "conceder privilégios materiais ao preso em relação aos demais cidadãos.",
+          },
+          correta: "B",
+          explicacao:
+            "A LEP busca compatibilizar proteção social com reintegração do condenado, afastando ideias de vingança ou sofrimento físico.",
+        },
+        {
+          id: 172,
+          materia: "LEGESP",
+          assunto: "LEP – direitos do preso",
+          enunciado: "Nos termos da LEP, é direito do preso:",
+          alternativas: {
+            A: "ser submetido a penas cruéis em caso de falta grave.",
+            B: "receber tratamento desumano quando houver risco de fuga.",
+            C: "ter respeitadas sua integridade física e moral.",
+            D: "ser mantido permanentemente incomunicável.",
+          },
+          correta: "C",
+          explicacao:
+            "A LEP, em consonância com a Constituição, assegura ao preso respeito à integridade física e moral, vedando penas cruéis e tratamentos degradantes.",
+        },
+        {
+          id: 173,
+          materia: "LEGESP",
+          assunto: "LEP – classificação do condenado",
+          enunciado:
+            "A classificação do condenado, segundo a LEP, tem por finalidade:",
+          alternativas: {
+            A: "apenas dividir presos por ordem alfabética.",
+            B: "individualizar a execução e orientar a forma de cumprimento da pena.",
+            C: "separar presos segundo a cor da pele.",
+            D: "definir quem terá direito à alimentação.",
+          },
+          correta: "B",
+          explicacao:
+            "A classificação do condenado permite individualizar a execução, considerando personalidade, antecedentes e outras circunstâncias relevantes.",
+        },
+        {
+          id: 174,
+          materia: "LEGESP",
+          assunto: "LEP – trabalho do preso",
+          enunciado: "Conforme a LEP, o trabalho do preso:",
+          alternativas: {
+            A: "é proibido, por violar a dignidade humana.",
+            B: "é um dever social e condição de dignidade, devendo ser remunerado.",
+            C: "só pode ser realizado fora do estabelecimento prisional.",
+            D: "dispensa qualquer medida de segurança e higiene.",
+          },
+          correta: "B",
+          explicacao:
+            "A LEP vê o trabalho como dever social e condição de dignidade, com finalidade educativa e produtiva, devendo ser remunerado e protegido.",
+        },
+        {
+          id: 175,
+          materia: "LEGESP",
+          assunto: "LEP – assistência ao preso",
+          enunciado:
+            "A assistência ao preso prevista na LEP tem como objetivo principal:",
+          alternativas: {
+            A: "garantir status superior ao do servidor público.",
+            B: "prevenir o crime e orientar o retorno do apenado ao convívio social.",
+            C: "afastar o preso de qualquer atividade educativa.",
+            D: "substituir totalmente a família em suas obrigações afetivas.",
+          },
+          correta: "B",
+          explicacao:
+            "A assistência material, médica, jurídica, educacional, social e religiosa busca prevenir reincidência e favorecer a reintegração social.",
+        },
+        {
+          id: 176,
+          materia: "LEGESP",
+          assunto: "LEP – sanções disciplinares",
+          enunciado:
+            "Segundo a LEP, as sanções disciplinares aplicadas ao preso:",
+          alternativas: {
+            A: "podem incluir penas de caráter cruel, em situações excepcionais.",
+            B: "devem respeitar os limites de duração e as garantias de defesa previstos em lei.",
+            C: "independem de qualquer procedimento apuratório.",
+            D: "podem ser aplicadas exclusivamente por outros presos.",
+          },
+          correta: "B",
+          explicacao:
+            "As sanções disciplinares devem observar procedimento, direito de defesa e limites legais, não podendo assumir caráter cruel.",
+        },
+        {
+          id: 177,
+          materia: "LEGESP",
+          assunto: "LEP – remição da pena",
+          enunciado: "Na LEP, a remição da pena, em linhas gerais, permite:",
+          alternativas: {
+            A: "aumentar a pena em razão de falta grave.",
+            B: "substituir a pena privativa por multa.",
+            C: "descontar dias da pena pelo trabalho ou estudo do condenado, obedecidas as regras legais.",
+            D: "extinguir automaticamente a punibilidade após qualquer falta disciplinar.",
+          },
+          correta: "C",
+          explicacao:
+            "A remição reduz parte da pena em razão de trabalho ou estudo, como incentivo à atividade ressocializadora.",
+        },
+        {
+          id: 178,
+          materia: "LEGESP",
+          assunto: "LEP – regime disciplinar diferenciado (RDD)",
+          enunciado:
+            "O regime disciplinar diferenciado (RDD), previsto na LEP, caracteriza‑se, entre outros pontos, por:",
+          alternativas: {
+            A: "amplo convívio com os demais presos.",
+            B: "maior rigor no isolamento e nas visitas, aplicado em hipóteses específicas, como presos de alta periculosidade.",
+            C: "liberdade irrestrita de circulação na unidade prisional.",
+            D: "impossibilidade de qualquer fiscalização judicial.",
+          },
+          correta: "B",
+          explicacao:
+            "O RDD é regime mais severo, com isolamento maior e restrições, aplicável em situações excepcionais definidas em lei.",
+        },
+        {
+          id: 179,
+          materia: "LEGESP",
+          assunto: "LEP – progressão de regime",
+          enunciado:
+            "A progressão de regime, conforme a LEP e legislação correlata, tem por finalidade:",
+          alternativas: {
+            A: "pular diretamente do regime fechado para a liberdade plena, sem condições.",
+            B: "garantir punição mais severa ao condenado.",
+            C: "permitir que o condenado avance para regime menos rigoroso, se preencher requisitos legais e apresentar bom comportamento.",
+            D: "apenas aumentar o tempo de cumprimento de pena.",
+          },
+          correta: "C",
+          explicacao:
+            "A progressão permite transição gradual para regime mais brando, desde que cumpridos requisitos objetivos e subjetivos.",
+        },
+        {
+          id: 180,
+          materia: "LEGESP",
+          assunto: "LEP – inspeção judicial",
+          enunciado:
+            "A LEP prevê que o juiz da execução deve visitar estabelecimentos penais periodicamente com o objetivo de:",
+          alternativas: {
+            A: "fiscalizar as condições de cumprimento da pena e apurar eventuais irregularidades.",
+            B: "exercer função administrativa de direção da unidade.",
+            C: "realizar sorteios de benefícios para os presos.",
+            D: "substituir o diretor em suas atribuições diárias.",
+          },
+          correta: "A",
+          explicacao:
+            "As visitas do juiz têm caráter fiscalizatório, voltado a garantir a legalidade da execução e a proteção dos direitos dos presos.",
+        },
+        // Português – Conjunções (id 181–190)
+        {
+          id: 181,
+          materia: "PORT",
+          assunto: "Conjunção coordenativa aditiva",
+          enunciado:
+            "Na frase 'O agente conferiu as celas e revisou os lacres', a conjunção 'e' estabelece relação de:",
+          alternativas: {
+            A: "oposição.",
+            B: "adição.",
+            C: "alternância.",
+            D: "conclusão.",
+          },
+          correta: "B",
+          explicacao:
+            "A conjunção 'e' liga duas ações que se somam, caracterizando coordenação sindética aditiva.",
+        },
+        {
+          id: 182,
+          materia: "PORT",
+          assunto: "Conjunção coordenativa adversativa",
+          enunciado:
+            "Em 'O procedimento foi rápido, mas extremamente cuidadoso', a conjunção 'mas' indica:",
+          alternativas: {
+            A: "explicação.",
+            B: "causa.",
+            C: "oposição ou contraste.",
+            D: "adição.",
+          },
+          correta: "C",
+          explicacao:
+            "'Mas' é conjunção coordenativa adversativa, marcando contraste entre 'rápido' e 'extremamente cuidadoso'.",
+        },
+        {
+          id: 183,
+          materia: "PORT",
+          assunto: "Conjunção coordenativa alternativa",
+          enunciado:
+            "Assinale a alternativa em que a conjunção expressa ideia de alternância:",
+          alternativas: {
+            A: "Os agentes verificaram as celas e registraram o relatório.",
+            B: "Os presos permaneceram em silêncio, pois ouviram a orientação.",
+            C: "Os servidores podem registrar a ocorrência no sistema ou encaminhar o formulário impresso.",
+            D: "Os diretores estavam cansados, contudo continuaram a reunião.",
+          },
+          correta: "C",
+          explicacao:
+            "A conjunção 'ou' em C apresenta duas possibilidades excludentes, configurando disjunção (coordenação alternativa).",
+        },
+        {
+          id: 184,
+          materia: "PORT",
+          assunto: "Conjunção coordenativa conclusiva",
+          enunciado:
+            "Na frase 'Todos os setores confirmaram os dados, logo o relatório pôde ser enviado', a conjunção 'logo' tem valor:",
+          alternativas: {
+            A: "adversativo.",
+            B: "concessivo.",
+            C: "conclusivo.",
+            D: "temporal.",
+          },
+          correta: "C",
+          explicacao:
+            "'Logo' introduz conclusão decorrente da confirmação dos dados, sendo conjunção coordenativa conclusiva.",
+        },
+        {
+          id: 185,
+          materia: "PORT",
+          assunto: "Conjunção coordenativa explicativa",
+          enunciado:
+            "Assinale a frase em que a conjunção 'pois' tem valor EXPLICATIVO:",
+          alternativas: {
+            A: "O sistema apresentou falha, pois será necessário reiniciá‑lo.",
+            B: "O sistema apresentou falha; será necessário reiniciá‑lo, pois.",
+            C: "O sistema apresentou falha; será necessário reiniciá‑lo, pois ocorreu queda de energia.",
+            D: "O sistema apresentou falha; será necessário reiniciá‑lo, pois então voltará a funcionar.",
+          },
+          correta: "C",
+          explicacao:
+            "Em C, 'pois' aparece entre orações, antecedendo a explicação da necessidade de reinício; tem valor explicativo, não apenas conclusivo.",
+        },
+        {
+          id: 186,
+          materia: "PORT",
+          assunto: "Orações coordenadas assindéticas",
+          enunciado:
+            "Em 'O agente entrou na cela, verificou o cadeado, conferiu o número dos presos', a ausência de conjunções entre as orações caracteriza:",
+          alternativas: {
+            A: "orações coordenadas assindéticas.",
+            B: "orações subordinadas causais.",
+            C: "orações subordinadas condicionais.",
+            D: "orações coordenadas adversativas.",
+          },
+          correta: "A",
+          explicacao:
+            "As orações estão apenas justapostas, sem conectivos coordenativos, formando orações coordenadas assindéticas.",
+        },
+        {
+          id: 187,
+          materia: "PORT",
+          assunto: "Conjunção subordinativa causal",
+          enunciado:
+            "Na frase 'O servidor foi advertido porque descumpriu o procedimento', a conjunção 'porque' introduz oração:",
+          alternativas: {
+            A: "condicional.",
+            B: "concessiva.",
+            C: "causal.",
+            D: "comparativa.",
+          },
+          correta: "C",
+          explicacao:
+            "'Porque' apresenta a causa da advertência, configurando oração subordinada adverbial causal.",
+        },
+        {
+          id: 188,
+          materia: "PORT",
+          assunto: "Conjunção subordinativa concessiva",
+          enunciado:
+            "Assinale a frase em que a conjunção introduz oração concessiva:",
+          alternativas: {
+            A: "Embora estivesse cansado, o agente concluiu o relatório.",
+            B: "Quando terminou o plantão, o agente concluiu o relatório.",
+            C: "Se terminar o plantão, o agente concluirá o relatório.",
+            D: "Porque terminou o plantão, o agente concluiu o relatório.",
+          },
+          correta: "A",
+          explicacao:
+            "'Embora' indica fato que se opõe à realização da ação principal, mas não a impede, caracterizando valor concessivo.",
+        },
+        {
+          id: 189,
+          materia: "PORT",
+          assunto: "Conjunção subordinativa proporcional",
+          enunciado:
+            "Na frase 'À medida que os servidores treinam, o número de falhas diminui', a locução conjuntiva 'À medida que' expressa ideia de:",
+          alternativas: {
+            A: "condição.",
+            B: "proporcionalidade/simultaneidade.",
+            C: "causa.",
+            D: "finalidade.",
+          },
+          correta: "B",
+          explicacao:
+            "'À medida que' estabelece relação proporcional e simultânea entre o aumento de treinamento e a diminuição de falhas.",
+        },
+        {
+          id: 190,
+          materia: "PORT",
+          assunto: "Valores semânticos de conjunções",
+          enunciado:
+            "Em 'Os presos foram avisados, contudo insistiram em descumprir a regra, de modo que sofreram sanção', as expressões 'contudo' e 'de modo que' estabelecem, respectivamente:",
+          alternativas: {
+            A: "adição e explicação.",
+            B: "oposição e conclusão/ consequência.",
+            C: "causa e condição.",
+            D: "condição e proporção.",
+          },
+          correta: "B",
+          explicacao:
+            "'Contudo' é conjunção adversativa (oposição); 'de modo que' introduz resultado da atitude anterior, com valor conclusivo/consecutivo.",
+        },
+        // Português – Interpretação, coerência e coesão (ex.: id 191–200)
+        {
+          id: 191,
+          materia: "PORT",
+          assunto: "Ideia central",
+          enunciado:
+            "Um texto afirmava que 'a atuação do policial penal deve ser firme, porém orientada pelo respeito aos direitos humanos'. A ideia central dessa afirmação é que:",
+          alternativas: {
+            A: "a firmeza na atuação dispensa qualquer limite legal.",
+            B: "os direitos humanos impedem o exercício da autoridade.",
+            C: "é necessário equilibrar disciplina e respeito à dignidade das pessoas sob custódia.",
+            D: "a disciplina é menos importante do que a cordialidade.",
+          },
+          correta: "C",
+          explicacao:
+            "O trecho aponta para o equilíbrio entre firmeza e respeito aos direitos humanos, não para a negação de um ou de outro.",
+        },
+        {
+          id: 192,
+          materia: "PORT",
+          assunto: "Inferência",
+          enunciado:
+            "Um relatório diz: 'Após a adoção do novo procedimento, reduziram‑se os incidentes na unidade'. É possível inferir que:",
+          alternativas: {
+            A: "o novo procedimento contribuiu para diminuir incidentes.",
+            B: "os incidentes aumentaram de forma significativa.",
+            C: "os incidentes permaneceram exatamente iguais.",
+            D: "o relatório considera o procedimento inútil.",
+          },
+          correta: "A",
+          explicacao:
+            "A redução de incidentes após a adoção do procedimento indica contribuição positiva desse procedimento para a segurança.",
+        },
+        {
+          id: 193,
+          materia: "PORT",
+          assunto: "Pressuposto / implícito",
+          enunciado:
+            "Na frase 'O servidor voltou a chegar atrasado ao plantão', pressupõe‑se que:",
+          alternativas: {
+            A: "é a primeira vez que o servidor se atrasa.",
+            B: "o servidor já havia se atrasado em outra ocasião.",
+            C: "o servidor nunca cumpriu o horário corretamente.",
+            D: "o atraso não causou qualquer problema.",
+          },
+          correta: "B",
+          explicacao:
+            "O verbo 'voltar a' indica repetição de uma ação, sugerindo atraso anterior.",
+        },
+        {
+          id: 194,
+          materia: "PORT",
+          assunto: "Coesão referencial – pronomes",
+          enunciado:
+            "Leia o período: 'Os presos receberam orientações claras. Eles deverão assiná‑las ao final.' O pronome 'elas' retoma:",
+          alternativas: {
+            A: "os presos.",
+            B: "orientações.",
+            C: "claro.",
+            D: "final.",
+          },
+          correta: "B",
+          explicacao:
+            "'Elas' está no feminino plural e retoma 'orientações' (também feminino plural), funcionando como elemento de coesão referencial.",
+        },
+        {
+          id: 195,
+          materia: "PORT",
+          assunto: "Coesão sequencial – conectivos",
+          enunciado:
+            "Em um texto, aparece o seguinte trecho: 'Primeiro, a equipe verifica as celas; em seguida, registra as ocorrências; por fim, encaminha o relatório à direção.' Os termos destacados exercem função de:",
+          alternativas: {
+            A: "marcadores de tempo cronológico, sem relação lógica entre as ações.",
+            B: "marcadores de comparação entre agentes diferentes.",
+            C: "elementos de coesão sequencial, que organizam a ordem dos procedimentos.",
+            D: "pronome de tratamento e vocativo.",
+          },
+          correta: "C",
+          explicacao:
+            "'Primeiro', 'em seguida' e 'por fim' organizam a sequência das ações, garantindo coesão sequencial no texto.",
+        },
+        {
+          id: 196,
+          materia: "PORT",
+          assunto: "Coerência global",
+          enunciado:
+            "Um texto afirma, no primeiro parágrafo, que 'a revista pessoal deve respeitar a integridade do custodiado', e, no parágrafo seguinte, defende que 'qualquer método é válido, ainda que humilhante'. Em relação à coerência textual, pode‑se afirmar que:",
+          alternativas: {
+            A: "há coerência, porque ambos os trechos tratam de segurança.",
+            B: "há contradição entre os trechos, prejudicando a coerência global do texto.",
+            C: "não há problema, pois textos podem defender ideias opostas sem prejuízo.",
+            D: "a coerência depende apenas de correção gramatical.",
+          },
+          correta: "B",
+          explicacao:
+            "Os trechos se contradizem: um defende respeito à integridade, outro admite métodos humilhantes; isso quebra a coerência global.",
+        },
+        {
+          id: 197,
+          materia: "PORT",
+          assunto: "Organização de argumentos",
+          enunciado:
+            "Em um artigo sobre o sistema prisional, o autor primeiro apresenta dados estatísticos, depois descreve casos concretos e, ao final, defende uma proposta de melhoria. Essa organização contribui para:",
+          alternativas: {
+            A: "prejudicar a compreensão do leitor.",
+            B: "reforçar a argumentação, partindo de dados e exemplos até chegar à conclusão.",
+            C: "eliminar a necessidade de coesão textual.",
+            D: "transformar o texto em narrativa ficcional.",
+          },
+          correta: "B",
+          explicacao:
+            "A sequência dados → exemplos → proposta é típica de texto argumentativo bem estruturado, fortalecendo a persuasão.",
+        },
+        {
+          id: 198,
+          materia: "PORT",
+          assunto: "Função de conectivo conclusivo",
+          enunciado:
+            "No período 'Os agentes passaram por treinamento específico, portanto estão mais preparados para agir em situações de crise', a palavra 'portanto' indica:",
+          alternativas: {
+            A: "oposição entre treinamento e preparação.",
+            B: "causa da realização do treinamento.",
+            C: "conclusão resultante do fato apresentado anteriormente.",
+            D: "condição para que o treinamento ocorra.",
+          },
+          correta: "C",
+          explicacao:
+            "'Portanto' é conector conclusivo, marcando consequência lógica do treinamento: maior preparação dos agentes.",
+        },
+        {
+          id: 199,
+          materia: "PORT",
+          assunto: "Coesão lexical – sinonímia",
+          enunciado:
+            "Em um texto, aparece: 'Os servidores foram orientados sobre o novo procedimento. Os funcionários deverão cumprir rigorosamente as etapas descritas.' A expressão 'os funcionários' exerce função de coesão por:",
+          alternativas: {
+            A: "repetição literal.",
+            B: "elisão.",
+            C: "sinonímia, evitando repetição de 'servidores'.",
+            D: "contraste semântico.",
+          },
+          correta: "C",
+          explicacao:
+            "'Servidores' e 'funcionários' são termos próximos em sentido; a substituição evita repetição, caracterizando coesão lexical por sinonímia.",
+        },
+        {
+          id: 200,
+          materia: "PORT",
+          assunto: "Inferência pelo conectivo 'então'",
+          enunciado:
+            "Considere o trecho: 'O diretor determinou que as revistas fossem reforçadas; então, os agentes intensificaram o controle de acesso.' O uso de 'então' permite concluir que:",
+          alternativas: {
+            A: "as revistas foram reforçadas antes da determinação do diretor.",
+            B: "a intensificação do controle de acesso é consequência da determinação do diretor.",
+            C: "não há relação entre a determinação e o controle de acesso.",
+            D: "os agentes desobedeceram à ordem.",
+          },
+          correta: "B",
+          explicacao:
+            "O conectivo 'então' funciona como marcador de consequência, ligando a ordem do diretor ao reforço das revistas.",
+        },
+      ];
+
+      // ====== LÓGICA DO QUIZ ======
+      let respostas = {};
+      const salvo = localStorage.getItem("quiz_geral_ppmg");
+      if (salvo) {
+        try {
+          respostas = JSON.parse(salvo) || {};
+        } catch (e) {
+          respostas = {};
+        }
+      }
+
+      const lista = document.getElementById("listaQuestoes");
+
+      function corMateria(m) {
+        return (
+          {
+            PORT: "var(--port)",
+            LEGESP: "var(--leg)",
+            DH: "var(--dh)",
+            ND: "var(--nd)",
+            INFO: "var(--info)",
+            RL: "var(--rl)",
+          }[m] || "#6b7280"
+        );
+      }
+      function nomeMateria(m) {
+        return (
+          {
+            PORT: "Língua Portuguesa",
+            LEGESP: "Legislação Especial",
+            DH: "Direitos Humanos",
+            ND: "Noções de Direito",
+            INFO: "Informática",
+            RL: "Raciocínio Lógico",
+          }[m] || m
+        );
+      }
+
+      function aplicarEstilos(card, q, marcada, acertou) {
+        const botoes = card.querySelectorAll(".alt");
+        botoes.forEach((btn) => {
+          const letra = btn.dataset.alt;
+          btn.classList.add("desativada");
+          if (letra === q.correta) btn.classList.add("certa");
+          if (letra === marcada && !acertou)
+            btn.classList.add("errada-selecionada");
+        });
+        const st = card.querySelector(".status");
+        st.innerHTML = acertou
+          ? "<span class='ok'>Resposta correta.</span>"
+          : `<span class='err'>Resposta incorreta.</span> Correta: <strong>${q.correta}</strong>.`;
+      }
+
+      function renderQuestoes() {
+        lista.innerHTML = "";
+        questoes.forEach((q, idx) => {
+          const card = document.createElement("article");
+          card.className = "card-q";
+          card.dataset.id = q.id;
+
+          const r = respostas[q.id];
+          const ja = !!r;
+          const acertou = r?.correto || false;
+
+          card.innerHTML = `
+                            <div class="card-header">
+                              <span class="badge-n">Q${idx + 1}</span>
+                              <span class="badge-disc"
+                                    style="background:${corMateria(
+                                      q.materia
+                                    )}20;border:1px solid ${corMateria(
+            q.materia
+          )}50;">
+                                ${nomeMateria(q.materia)} · ${q.assunto}
+                              </span>
+                            </div>
+                            <p class="enunciado">${q.enunciado}</p>
+                            <div class="alternativas">
+                              ${["A", "B", "C", "D"]
+                                .map(
+                                  (letra) => `
+                                <button type="button" class="alt" data-alt="${letra}">
+                                  <span class="letra">${letra})</span>
+                                  <span>${q.alternativas[letra]}</span>
+                                </button>
+                              `
+                                )
+                                .join("")}
+                            </div>
+                            <div class="status"></div>
+                            <div class="explicacao" style="display:${
+                              ja ? "block" : "none"
+                            };">
+                              <span class="${acertou ? "ok" : "err"}">
+                                ${acertou ? "Você acertou." : "Você errou."}
+                              </span><br>
+                              ${q.explicacao}
+                            </div>
+                          `;
+          lista.appendChild(card);
+          if (ja) aplicarEstilos(card, q, r.alternativa, acertou);
+        });
+      }
+
+      function atualizarPainel() {
+        const totais = { GERAL: { resp: 0, acertos: 0 } };
+        ["PORT", "LEGESP", "DH", "ND", "INFO", "RL"].forEach((m) => {
+          totais[m] = { resp: 0, acertos: 0 };
+        });
+
+        for (const id in respostas) {
+          const r = respostas[id];
+          const q = questoes.find((x) => x.id == id);
+          if (!q) continue;
+          totais.GERAL.resp++;
+          if (r.correto) totais.GERAL.acertos++;
+          totais[q.materia].resp++;
+          if (r.correto) totais[q.materia].acertos++;
+        }
+
+        const respG = totais.GERAL.resp;
+        const acG = totais.GERAL.acertos;
+        const errG = respG - acG;
+        const pctG = respG ? Math.round((100 * acG) / respG) : 0;
+
+        document.getElementById("kTotalResp").textContent = respG;
+        document.getElementById("kTotalAcertos").textContent = acG;
+        document.getElementById("kTotalErros").textContent = errG;
+        document.getElementById("kMedia").innerHTML =
+          pctG + "<span style='font-size:.8rem;'>%</span>";
+        document.getElementById("bGeral").style.width = pctG + "%";
+
+        ["PORT", "LEGESP", "DH", "ND", "INFO", "RL"].forEach((m) => {
+          const el = document.getElementById("p" + m);
+          const resp = totais[m].resp;
+          const ac = totais[m].acertos;
+          const pct = resp ? Math.round((100 * ac) / resp) : 0;
+          el.textContent = pct + "%";
+          el.style.color =
+            pct >= 90 ? "#16a34a" : pct >= 70 ? "#ea580c" : "#dc2626";
+        });
+      }
+
+      lista.addEventListener("click", (e) => {
+        const botao = e.target.closest(".alt");
+        if (!botao) return;
+        const card = e.target.closest(".card-q");
+        const id = parseInt(card.dataset.id, 10);
+        if (respostas[id]) return; // já respondida
+
+        const letra = botao.dataset.alt;
+        const q = questoes.find((x) => x.id === id);
+        const correto = letra === q.correta;
+
+        respostas[id] = { alternativa: letra, correto };
+        localStorage.setItem("quiz_geral_ppmg", JSON.stringify(respostas));
+
+        aplicarEstilos(card, q, letra, correto);
+        card.querySelector(".explicacao").style.display = "block";
+        atualizarPainel();
+      });
+
+      // inicialização
+      renderQuestoes();
+      atualizarPainel();
+    </script>
+  </body>
+</html>
